@@ -1,0 +1,14 @@
+# Style manifest. Adding a style = a new [styles.<name>] section + a directory
+# of PNGs under assets/images/<name>/. No code changes required.
+
+[styles.classic]
+display_name = "Classic"
+scale = 1.0
+
+[styles.derp]
+display_name = "Derp"
+scale = 1.0
+
+[styles.chonk]
+display_name = "Chonk"
+scale = 1.15
