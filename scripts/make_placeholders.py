@@ -8,14 +8,14 @@ from __future__ import annotations
 
 from pathlib import Path
 
-import numpy as np
+from matplotlib.axes import Axes
 from matplotlib.figure import Figure
 from matplotlib.patches import Circle, Ellipse, Polygon
 
 ASSETS_DIR = Path(__file__).resolve().parent.parent / "src" / "catplotlib" / "assets" / "images"
 
 
-def _new_canvas() -> tuple[Figure, "np.ndarray"]:
+def _new_canvas() -> tuple[Figure, Axes]:
     fig = Figure(figsize=(1.28, 1.28), dpi=100)
     fig.patch.set_alpha(0.0)
     ax = fig.add_axes((0, 0, 1, 1))
