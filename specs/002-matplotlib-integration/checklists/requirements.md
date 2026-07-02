@@ -31,9 +31,9 @@
 
 ## Notes
 
-- Two open design questions (enable/disable-vs-hook composition mechanism, exclusion-bbox
-  extraction granularity) are intentionally left as named assumptions, routed to
-  `/speckit-clarify`, per STANDUP_PLAN.md §5 M2. Interception point, idempotency-guard
-  mechanism, and bbox-extraction feasibility (all originally flagged as open in
-  STANDUP_PLAN.md) were resolved ahead of spec-writing via matplotlib internals research
-  (Figure.draw wrap + per-instance flag + get_tightbbox(); recorded in research.md at plan time).
+- All open design questions resolved as of `/speckit-clarify` on 2026-07-02 — see the spec's
+  `## Clarifications` section: enable/disable is a permanent single patch + flag-check (not
+  unpatch/repatch), and bbox extraction uses whole-axes tight bboxes. Interception point,
+  idempotency-guard mechanism, and bbox-extraction feasibility were resolved even earlier, ahead
+  of spec-writing, via matplotlib internals research (Figure.draw wrap + per-instance flag +
+  get_tightbbox()).

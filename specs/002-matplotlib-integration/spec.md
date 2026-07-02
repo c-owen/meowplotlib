@@ -8,6 +8,13 @@
 
 **Input**: User description: "The import-time hook: intercept figure rendering so cats appear on display and savefig with zero user code changes, and can be cleanly disabled. Riskiest feature of catplotlib v1."
 
+## Clarifications
+
+### Session 2026-07-02
+
+- Q: How should enable()/disable() interact with the installed Figure.draw hook? → A: Patch once at import time, permanently, for the process. disable()/enable() only flip the global `Config.enabled` flag the wrapper checks on every call; when disabled, the wrapper calls straight through to the original draw with no other code executed, so output is provably identical to unpatched matplotlib. The class method itself is never unpatched/repatched.
+- Q: How granular should exclusion-bbox extraction be for figures? → A: Whole-axes tight bbox — each Axes's `get_tightbbox()` (already includes its tick labels and axis labels) plus the legend's own extent if present, unioned into a small handful of exclusion rectangles per figure.
+
 ## User Scenarios & Testing *(mandatory)*
 
 ### User Story 1 - One import, cats everywhere (Priority: P1)
@@ -204,10 +211,7 @@ assert empty intersection — the automated harness described in STANDUP_PLAN.md
   figure that was decorated before `disable()` was called (User Story 3, Acceptance Scenario 3).
   This matches PRD requirement 7's framing ("turn the effect off ... for the rest of the
   script") rather than an "undo everything already drawn" requirement.
-- The exact mechanism for how the draw-hook wrapper and the enable/disable flag compose (e.g.
-  whether the hook is installed once at import time and internally checks a global enabled flag
-  on every draw, versus literally patching/unpatching the method) is an open design question,
-  to resolve in `/speckit-clarify` before planning.
-- The granularity of exclusion-bbox extraction (whole-axes tight bbox vs. per-element bboxes for
-  each tick label/axis label/legend individually) is an open design question, to resolve in
-  `/speckit-clarify` before planning — it affects both correctness precision and extraction cost.
+- The draw hook is installed exactly once per process, at import time, by replacing
+  `matplotlib.figure.Figure.draw` with a wrapper. It is never unpatched/repatched; the wrapper
+  itself checks `Config.enabled` on every call and is a pure pass-through to the original draw
+  method when disabled.
