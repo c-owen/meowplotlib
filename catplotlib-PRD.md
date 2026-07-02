@@ -38,7 +38,7 @@ There is a long-running tradition of novelty Python packages (`antigravity`, `th
 
 - **Not a charting library.** `catplotlib` will never provide its own plot types, data transforms, or replace `matplotlib`/`seaborn` for actual visualization work. Out of scope permanently.
 - **Not pursuing statistical/appearance neutrality.** Unlike `seaborn`, this tool is not trying to be "safe" for professional or academic publication by default — that's a possible configuration state (e.g. "off"), not the design center.
-- **Not building original character art in-house for v1.** We are not standing up an illustration pipeline or commissioning original mascot art as part of this release; v1 ships with a small set of externally-sourced or provided art assets with clear licensing. Custom/commissioned art is a future consideration, not a v1 requirement.
+- **Not building original character art in-house for v1.** We are not standing up an illustration pipeline or commissioning original mascot art as part of this release; v1 ships with a small set of externally-sourced or provided art assets. Custom/commissioned art is a future consideration, not a v1 requirement.
 - **Not supporting plotting libraries other than `matplotlib`** (e.g. Plotly, Bokeh, Altair) in v1. Seaborn compatibility is in scope only because Seaborn is built directly on `matplotlib` figures/axes.
 - **Not building a GUI or web app.** This is a Python library configured in code, not a hosted service or visual editor.
 
@@ -109,12 +109,6 @@ There is a long-running tradition of novelty Python packages (`antigravity`, `th
 - Acceptance criteria:
   - [ ] A documented, discoverable way exists to turn the effect off and back on within the same running session.
 
-**8. Licensing integrity**
-- All artwork shipped with the package is properly licensed for redistribution (original art, or assets under a license compatible with redistribution in an open-source package), with attribution included where required.
-- Acceptance criteria:
-  - [ ] Every shipped image asset has a documented source and license.
-  - [ ] No shipped asset is a copyrighted meme image, screenshot, or photo used without rights to redistribute.
-
 ### Nice-to-Have (P1)
 
 - **Placement mode control**: choice between border-only, corners-only, or scattered-anywhere-non-overlapping placement.
@@ -122,7 +116,7 @@ There is a long-running tradition of novelty Python packages (`antigravity`, `th
 - **Rotation control**: ability to cap or disable rotation of individual cats.
 - **Per-figure override**: ability to set different config (style, density, on/off) for one specific figure without changing the global/session default.
 - **Style weighting**: when mixing styles, let the user bias the mix (e.g. "mostly classic, occasional chonk") rather than uniform random selection.
-- **Expanded style library**: additional meme-inspired styles beyond the initial three (e.g. sleepy/loaf, floofy, judgmental side-eye), sourced under the same licensing bar as P0.
+- **Expanded style library**: additional meme-inspired styles beyond the initial three (e.g. sleepy/loaf, floofy, judgmental side-eye).
 
 ### Future Considerations (P2)
 
@@ -164,7 +158,6 @@ This is a novelty/delight product; success is primarily about reach and sentimen
 
 ## Open Questions
 
-- **[Stakeholder/Legal]** What specific art assets will be used for the initial style set, and has their license been confirmed as redistributable within a pip-installed open-source package? (Blocking — P0 requirement 8 depends on this.)
 - **[Product]** Should the effect be opt-in per figure by default, or opt-out globally after import? Current spec assumes "opt-out globally after import" (import applies it everywhere) but this affects the "non-destructive" expectations for teams who share notebooks. (Non-blocking, but should be resolved before finalizing the P0 activation behavior.)
 - **[Design/Product]** For the "mixed styles on one figure" behavior (P0 requirement 6), what's the right default mix — even weighting across styles, or classic-dominant with occasional meme styles? (Non-blocking; can ship a reasonable default and adjust based on early feedback.)
 - **[Engineering]** What is the right default behavior on very small or export-constrained figures (e.g. a 2x2 inch thumbnail) — reduce cat count automatically, or leave sizing entirely to the user's density/size settings? (Non-blocking, but affects the "graceful degradation" acceptance criterion under requirement 2.)
