@@ -43,9 +43,8 @@ with catplotlib.config(enabled=False):
 
 ## Art
 
-v1 ships with three programmatically-generated placeholder styles (`classic`, `derp`, `chonk`)
-so development never blocked on final art. Swapping in real artwork is a pure file-drop under
-`src/catplotlib/assets/images/<style>/` plus one `styles.toml` entry — no code changes. See
-[ATTRIBUTION.md](ATTRIBUTION.md) for sources.
+v1 ships with three real cat art styles: `classic`, `derp`, and `chonk`. Adding or swapping a
+style is a pure file-drop under `src/catplotlib/assets/images/<style>/` plus one `styles.toml`
+entry — no code changes required. See [ATTRIBUTION.md](ATTRIBUTION.md) for notes.
 
 See `STANDUP_PLAN.md` and `constitution.md` for the full project contract.
