@@ -14,12 +14,13 @@ from catplotlib.core.rng import new_rng
 Density = Literal["sparse", "normal", "chaotic"]
 
 # Per-tier area divisor: target count = available_border_area / divisor. Chosen so a reference
-# canvas (unit square, ~70% centered exclusion, default size_range) yields roughly 3/6/12 cats
-# for sparse/normal/chaotic respectively — strictly increasing on any fixed canvas.
+# canvas (unit square, ~70% centered exclusion, default size_range) yields roughly 6/12/24 cats
+# for sparse/normal/chaotic respectively — strictly increasing on any fixed canvas. (Halved from
+# the original 3/6/12 tuning per user request for a denser default look, 2026-07-02.)
 _DENSITY_DIVISORS: dict[Density, float] = {
-    "sparse": 0.131,
-    "normal": 0.0656,
-    "chaotic": 0.0328,
+    "sparse": 0.0655,
+    "normal": 0.0328,
+    "chaotic": 0.0164,
 }
 
 # Fixed edge margin as a fraction of the smaller canvas dimension.

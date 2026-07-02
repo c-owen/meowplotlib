@@ -21,6 +21,12 @@ if TYPE_CHECKING:
 
 _installed = False
 
+# Guaranteed clear space (figure-fraction) between each axes' tight bbox and every figure edge,
+# so cats can land on all four sides rather than only wherever the chart's default layout
+# happens to leave room. Sized comfortably above the largest rotated cat footprint (max size
+# 0.08, up to ~1.41x when rotated ~= 0.113) so a typical cat fits without shrinking.
+_GUARANTEED_MARGIN = 0.10
+
 
 def install() -> None:
     """Wrap `Figure.draw` once, process-wide. Safe to call more than once (no-op after first)."""
@@ -48,6 +54,7 @@ def _decorate(figure: Figure, density: str, seed: int | None, style: str | list[
     # NOT figure.get_size_inches(). This also gives small-figure degradation "for free": at a
     # fixed font size, a small figure's tick/axis labels occupy a larger fraction of the unit
     # square, shrinking available border area exactly as intended.
+    bboxes.ensure_minimum_margin(figure, _GUARANTEED_MARGIN)
     exclusions = bboxes.extract_exclusions(figure)
     styles = resolve_style_names(style)
     if not styles:
