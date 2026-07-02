@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from dataclasses import dataclass, field, fields
+from dataclasses import dataclass, fields
 
 
 @dataclass
@@ -29,7 +29,6 @@ class Config:
             setattr(self, name, value)
 
 
-_config: Config = field(default_factory=Config)
 _CONFIG = Config()
 
 

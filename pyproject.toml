@@ -37,7 +37,10 @@ src = ["src", "tests"]
 select = ["E", "F", "I", "UP", "B", "SIM"]
 
 [tool.mypy]
-python_version = "3.10"
+# NOTE: kept in sync with the dev environment's interpreter, not `requires-python`'s floor.
+# numpy's bundled stubs use PEP 695 syntax mypy can only parse at python_version >= 3.12,
+# regardless of the runtime `requires-python` floor this package targets.
+python_version = "3.12"
 strict = true
 files = ["src"]
 
