@@ -30,7 +30,7 @@ There is a long-running tradition of novelty Python packages (`antigravity`, `th
 
 1. **Trivial adoption**: A user can go from "never heard of this" to "cats on my plot" in under one minute — a single `pip install` and a single `import` line, no required configuration.
 2. **Delight and shareability**: The default output should be genuinely charming and screenshot-worthy without any tuning by the user.
-3. **Non-destructive by default**: Adding `catplotlib` to an existing project must never obscure data, break existing layouts, or alter chart semantics (axes, legends, data points remain fully readable).
+3. **Non-destructive by default**: Adding `catplotlib` to an existing project must never obscure data, or alter chart semantics (axes, legends, data points remain fully readable and unchanged). Catplotlib may slightly resize the plot area within the figure to guarantee cats have room to land on all four sides — a deliberate, bounded exception to "never touch layout," not a loophole for arbitrary changes.
 4. **Configurable whimsy**: Users who want more control (density, art style, placement, randomness seed) can get it through a small, discoverable configuration surface — without needing that configuration to get a good default result.
 5. **A library of distinct, recognizable cat "styles"** (e.g. classic, derp, chonk, and other meme-inspired variants) that users can select or mix, so the tool has replay value rather than being a one-joke novelty.
 
