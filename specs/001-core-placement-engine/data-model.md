@@ -44,7 +44,7 @@ One engine output entry.
 | `x` | `float` | Center x, figure-fraction. |
 | `y` | `float` | Center y, figure-fraction. |
 | `size` | `float` | Side length of the (square) bounding box, figure-fraction of the smaller canvas dimension. |
-| `rotation` | `float` | Degrees, `[0, 360)`. Metadata only — not used in collision (see research.md). |
+| `rotation` | `float` | Degrees, `[0, 360)`. Used in collision as of the 2026-07-02 addendum: `bbox()` reserves the axis-aligned bounding box of the square AFTER this rotation is applied, not the unrotated square (see research.md). |
 | `style` | `str` | One of `PlacementConfig.styles`. |
 
 Method: `bbox() -> Rect` — derives the AABB collision rectangle from `(x, y, size)`.

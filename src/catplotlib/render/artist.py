@@ -1,11 +1,18 @@
 """Draws placed cats onto the figure.
 
-Each cat is drawn in its own tiny inset Axes positioned at (or within) the placement's exact
-figure-fraction bounding box (`Placement.bbox()`), rather than via OffsetImage/AnnotationBbox's
-point-space `zoom`. This makes the actual rendered footprint match the bbox M1's collision math
-assumed exactly, instead of approximating it through a DPI-dependent zoom factor. Cat axes are
-tagged with `_catplotlib_cat = True` so `render/bboxes.py` can exclude them from exclusion
-extraction.
+Each cat is drawn in its own tiny inset Axes positioned at the placement's exact figure-fraction
+bounding box (`Placement.bbox()`), rather than via OffsetImage/AnnotationBbox's point-space
+`zoom`. This makes the actual rendered footprint match the bbox M1's collision math assumed
+exactly, instead of approximating it through a DPI-dependent zoom factor. Cat axes are tagged
+with `_catplotlib_cat = True` so `render/bboxes.py` can exclude them from exclusion extraction.
+
+Since M1's `Placement.bbox()` reserves the true rotated footprint (see
+specs/001-core-placement-engine/research.md's 2026-07-02 addendum), the cat axes here is always
+exactly that (larger, square) bbox; the image itself is drawn at its true unrotated size,
+centered, and rotated in data-space via an affine transform. Because the reserved bbox is by
+construction the axis-aligned bounding box of a `placement.size`-side square rotated by
+`placement.rotation`, the rotated image's true footprint always stays within the axes — no
+overflow into neighboring exclusions or other cats regardless of the sampled rotation angle.
 
 Style resolution goes through `assets.registry` (M3): `placement.style` selects a style, and a
 deterministic (not RNG-based) hash of the placement's own fields picks one image from that
@@ -19,6 +26,7 @@ import importlib.resources
 from typing import TYPE_CHECKING
 
 import matplotlib.image as mpimg
+import matplotlib.transforms as mtransforms
 
 from catplotlib.assets.registry import available_styles
 
@@ -57,20 +65,24 @@ def _resolve_image(placement: Placement) -> tuple[np.ndarray, float]:
 
 
 def draw_placements(figure: Figure, placements: list[Placement]) -> None:
-    """Add one cat image per placement, each in its own figure-fraction-positioned inset axes."""
+    """Add one rotated cat image per placement, each in its own figure-fraction inset axes."""
     for placement in placements:
         image, scale = _resolve_image(placement)
-        bbox = placement.bbox()
-        inset_w = bbox.width * (1 - scale) / 2
-        inset_h = bbox.height * (1 - scale) / 2
-        rect = (
-            bbox.x + inset_w,
-            bbox.y + inset_h,
-            bbox.width * scale,
-            bbox.height * scale,
-        )
-        cat_axes = figure.add_axes(rect)
+        bbox = placement.bbox()  # the rotation-inclusive reserved square
+        cat_axes = figure.add_axes((bbox.x, bbox.y, bbox.width, bbox.height))
         cat_axes._catplotlib_cat = True  # type: ignore[attr-defined]
         cat_axes.set_axis_off()
         cat_axes.patch.set_alpha(0.0)
-        cat_axes.imshow(image, aspect="auto")
+
+        half_span = bbox.width / 2
+        cat_axes.set_xlim(-half_span, half_span)
+        cat_axes.set_ylim(-half_span, half_span)
+
+        visual_half = (placement.size * scale) / 2
+        cat_image = cat_axes.imshow(
+            image,
+            extent=(-visual_half, visual_half, -visual_half, visual_half),
+        )
+        cat_image.set_transform(
+            mtransforms.Affine2D().rotate_deg(placement.rotation) + cat_axes.transData
+        )

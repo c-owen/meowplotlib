@@ -5,6 +5,7 @@ Pure logic — no matplotlib imports, no I/O (constitution #1).
 
 from __future__ import annotations
 
+import math
 from dataclasses import dataclass
 from typing import Literal
 
@@ -71,8 +72,17 @@ class Placement:
     style: str
 
     def bbox(self) -> Rect:
-        half = self.size / 2
-        return Rect(x=self.x - half, y=self.y - half, width=self.size, height=self.size)
+        """Axis-aligned bounding box of this cat's square footprint AFTER rotation.
+
+        Reserves the true rotated extent (side * (|cos theta| + |sin theta|), up to ~1.41x at
+        45 degrees) rather than the unrotated square, so a rendered, actually-rotated image
+        never exceeds the space collision-checked against exclusions and other placements. See
+        specs/001-core-placement-engine/research.md's 2026-07-02 addendum.
+        """
+        theta = math.radians(self.rotation)
+        side = self.size * (abs(math.cos(theta)) + abs(math.sin(theta)))
+        half = side / 2
+        return Rect(x=self.x - half, y=self.y - half, width=side, height=side)
 
 
 def _margin_rects(canvas_width: float, canvas_height: float, margin: float) -> list[Rect]:
@@ -142,14 +152,17 @@ def place_cats(
         placed = False
         while not placed:
             for _ in range(_MAX_ATTEMPTS_PER_CANDIDATE):
-                half = size / 2
+                rotation = rng.uniform(0, 360)
+                theta = math.radians(rotation)
+                rotated_side = size * (abs(math.cos(theta)) + abs(math.sin(theta)))
+                half = rotated_side / 2
                 x = rng.uniform(half, canvas_width - half)
                 y = rng.uniform(half, canvas_height - half)
                 candidate = Placement(
                     x=x,
                     y=y,
                     size=size,
-                    rotation=rng.uniform(0, 360),
+                    rotation=rotation,
                     style=rng.choice(config.styles),
                 )
                 bbox = candidate.bbox()

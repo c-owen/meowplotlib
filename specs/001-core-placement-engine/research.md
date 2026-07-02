@@ -4,21 +4,36 @@
 
 Every exclusion zone and every placed cat is represented as an axis-aligned bounding rectangle
 `(x, y, width, height)` in figure-fraction coordinates (`0..1` on both axes, matching
-matplotlib's `transFigure` space that the render layer will supply in M2). Rotation is stored as
-metadata on the placement but does NOT rotate the collision rectangle — the engine collides on
-each cat's unrotated bounding box, which is a conservative (slightly larger) approximation of
-the rotated shape.
+matplotlib's `transFigure` space that the render layer will supply in M2).
 
 **Rationale**: Axis-aligned bounding box (AABB) intersection is O(1) per pair and trivial to
 property-test exhaustively with `hypothesis`. Using the true rotated-rectangle intersection would
-require SAT (separating axis theorem) — meaningfully more complex for a decorative feature where
-overshooting the exclusion margin by a few percent of a cat's own size is an acceptable,
-conservative trade. Free real estate is not scarce enough in this problem to justify the
-complexity; correctness (never violating constitution #2) matters far more than packing density.
+require SAT (separating axis theorem) — meaningfully more complex than the AABB-of-the-rotated-
+square approach adopted below (2026-07-02 addendum), for no correctness benefit: both approaches
+guarantee zero visual overlap, SAT would just pack slightly denser.
 
-**Alternatives considered**: Rotated-rect SAT collision (rejected: complexity not justified by
-value); pixel-mask collision (rejected: requires rendering, violates constitution #1 core
-purity).
+**Alternatives considered**: Full SAT-based rotated-rectangle collision (rejected: meaningfully
+more complex for a marginal packing-density gain — the AABB-of-rotated-square approach below
+already achieves the actual product requirement, visible rotation with zero overlap); pixel-mask
+collision (rejected: requires rendering, violates constitution #1 core purity).
+
+### Addendum — 2026-07-02: `Placement.bbox()` now reserves the rotated footprint
+
+Originally, `bbox()` returned the *unrotated* square (rotation stored as metadata only, never
+rendered). The user reviewed the M2/M3 gallery output, found it looked static, and asked for
+rotation to actually render as a v1 feature rather than staying deferred metadata. Rendering a
+rotated square makes its true on-screen footprint bigger than the unrotated square (up to
+~1.41x the side length, i.e. ~2x the area, at a 45-degree rotation) — so `bbox()` was changed to
+return the axis-aligned bounding box of the *rotated* square: `side = size * (|cos theta| +
+|sin theta|)`. This keeps the non-overlap guarantee (constitution #2) exactly intact when
+rotation is actually rendered, at the cost of reserving more space per cat on average (~1.27x
+side length / ~1.62x area, averaged over a uniform rotation distribution) — verified this did
+not require retuning the density divisors below; the reference-canvas 3/6/12 sparse/normal/
+chaotic counts held exactly after the change. `place_cats()`'s candidate-sampling loop was
+updated to draw the candidate's rotation before its position, so the position-sampling bounds
+already account for the rotation-dependent half-extent rather than the old code's fixed `size/2`
+(which relied on the edge margin happening to absorb the difference — correct by accident, not
+by construction, for the size range in use; the fix removes that fragility).
 
 ## Decision: Placement search — rejection sampling with shrink-on-failure
 
