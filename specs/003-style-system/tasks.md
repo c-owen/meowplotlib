@@ -19,7 +19,7 @@ Single project. `src/catplotlib/assets/`, `src/catplotlib/render/artist.py`, `te
 
 ## Phase 1: Setup
 
-- [ ] T001 Confirm target Python's `tomllib` availability (`python -c "import sys; print(sys.version_info >= (3, 11))"`) — informational only, both code paths (tomllib vs. fallback) must work regardless of what this prints on the dev machine.
+- [x] T001 Confirm target Python's `tomllib` availability (`python -c "import sys; print(sys.version_info >= (3, 11))"`) — informational only, both code paths (tomllib vs. fallback) must work regardless of what this prints on the dev machine.
 
 ---
 
@@ -27,9 +27,9 @@ Single project. `src/catplotlib/assets/`, `src/catplotlib/render/artist.py`, `te
 
 **Purpose**: The manifest parser and core discovery function every user story depends on.
 
-- [ ] T002 [P] Implement `src/catplotlib/assets/_toml_fallback.py`: a minimal parser covering only flat `[styles.<name>]` sections with `display_name` (quoted string) and `scale` (float) keys, per research.md. No general TOML feature support — document this narrow scope in the module docstring.
-- [ ] T003 Implement `StyleInfo` dataclass and `discover_styles(images_dir, manifest_path) -> dict[str, StyleInfo]` in `src/catplotlib/assets/registry.py`, using `tomllib` when `sys.version_info >= (3, 11)` else the T002 fallback; only includes styles with both a non-empty image directory and a manifest entry (depends on T002).
-- [ ] T004 [P] `tests/assets/test_registry.py`: tests for `discover_styles()` against temp fixture directories — style with both dir+manifest included; style with only one or the other excluded; empty image directory excluded; malformed manifest entry excluded without crashing other styles.
+- [x] T002 [P] Implement `src/catplotlib/assets/_toml_fallback.py`: a minimal parser covering only flat `[styles.<name>]` sections with `display_name` (quoted string) and `scale` (float) keys, per research.md. No general TOML feature support — document this narrow scope in the module docstring.
+- [x] T003 Implement `StyleInfo` dataclass and `discover_styles(images_dir, manifest_path) -> dict[str, StyleInfo]` in `src/catplotlib/assets/registry.py`, using `tomllib` when `sys.version_info >= (3, 11)` else the T002 fallback; only includes styles with both a non-empty image directory and a manifest entry (depends on T002).
+- [x] T004 [P] `tests/assets/test_registry.py`: tests for `discover_styles()` against temp fixture directories — style with both dir+manifest included; style with only one or the other excluded; empty image directory excluded; malformed manifest entry excluded without crashing other styles.
 
 **Checkpoint**: `discover_styles()` is independently correct against fixtures, not yet wired to the real shipped `assets/` tree or to `set_style()`.
 
@@ -44,14 +44,14 @@ image path is under `assets/images/chonk/`.
 
 ### Tests for User Story 1
 
-- [ ] T005 [P] [US1] `tests/assets/test_registry.py`: `available_styles()` against the real shipped tree returns exactly `{"classic", "derp", "chonk"}` (SC-004's precondition — confirms the M0-authored fixtures are intact).
-- [ ] T006 [US1] `tests/render/test_hook.py` (or a new `tests/render/test_artist.py`): `set_style("chonk")`, render a chaotic-density figure, resolve each cat's image path via the registry, assert all are under `assets/images/chonk/` (SC-001).
+- [x] T005 [P] [US1] `tests/assets/test_registry.py`: `available_styles()` against the real shipped tree returns exactly `{"classic", "derp", "chonk"}` (SC-004's precondition — confirms the M0-authored fixtures are intact).
+- [x] T006 [US1] `tests/render/test_hook.py` (or a new `tests/render/test_artist.py`): `set_style("chonk")`, render a chaotic-density figure, resolve each cat's image path via the registry, assert all are under `assets/images/chonk/` (SC-001).
 
 ### Implementation for User Story 1
 
-- [ ] T007 [US1] Implement `available_styles()` in `src/catplotlib/assets/registry.py`, calling `discover_styles()` against the real package tree via `importlib.resources` (depends on T003).
-- [ ] T008 [US1] Change `render/artist._resolve_image` signature from `(style: str)` to `(placement: Placement)`; look up `placement.style` via `available_styles()`, pick the (currently single, per-style) image (depends on T007).
-- [ ] T009 [US1] Update `render/hook.py`'s call site to pass the full `placement`, not `placement.style`, to `_resolve_image` (depends on T008).
+- [x] T007 [US1] Implement `available_styles()` in `src/catplotlib/assets/registry.py`, calling `discover_styles()` against the real package tree via `importlib.resources` (depends on T003).
+- [x] T008 [US1] Change `render/artist._resolve_image` signature from `(style: str)` to `(placement: Placement)`; look up `placement.style` via `available_styles()`, pick the (currently single, per-style) image (depends on T007).
+- [x] T009 [US1] Update `render/hook.py`'s call site to pass the full `placement`, not `placement.style`, to `_resolve_image` (depends on T008).
 
 **Checkpoint**: Single-style selection fully functional end to end.
 
@@ -67,13 +67,13 @@ style appears among resolved cat images across a handful of seeds.
 
 ### Tests for User Story 2
 
-- [ ] T010 [P] [US2] `tests/assets/test_registry.py`: `resolve_style_names("mix")` returns exactly the current `available_styles()` key set; `resolve_style_names(["classic","derp"])` returns that list unchanged; `resolve_style_names("not-real")` raises `ValueError`.
-- [ ] T011 [US2] `tests/render/test_artist.py`: across 20 seeds at chaotic density with `set_style("mix")`, more than one distinct style appears among resolved cat images in ≥90% of seeds (SC-002).
+- [x] T010 [P] [US2] `tests/assets/test_registry.py`: `resolve_style_names("mix")` returns exactly the current `available_styles()` key set; `resolve_style_names(["classic","derp"])` returns that list unchanged; `resolve_style_names("not-real")` raises `ValueError`.
+- [x] T011 [US2] `tests/render/test_artist.py`: across 20 seeds at chaotic density with `set_style("mix")`, more than one distinct style appears among resolved cat images in ≥90% of seeds (SC-002).
 
 ### Implementation for User Story 2
 
-- [ ] T012 [US2] Implement `resolve_style_names(selection)` in `src/catplotlib/assets/registry.py` per contracts/registry-api.md (depends on T007).
-- [ ] T013 [US2] Wire `api.set_style()` to call `resolve_style_names()` eagerly (fail-fast on bad names) and store the resolved flat list (or the raw selection, resolved lazily at each render call — pick whichever keeps `Config.style`'s existing type contract; resolve at render time in `render/hook.py._decorate` is simplest and matches M2's existing call site) (depends on T012).
+- [x] T012 [US2] Implement `resolve_style_names(selection)` in `src/catplotlib/assets/registry.py` per contracts/registry-api.md (depends on T007).
+- [x] T013 [US2] Wire `api.set_style()` to call `resolve_style_names()` eagerly (fail-fast on bad names) and store the resolved flat list (or the raw selection, resolved lazily at each render call — pick whichever keeps `Config.style`'s existing type contract; resolve at render time in `render/hook.py._decorate` is simplest and matches M2's existing call site) (depends on T012).
 
 **Checkpoint**: User Stories 1 AND 2 both pass independently.
 
@@ -89,12 +89,12 @@ call `discover_styles()` against them directly, assert the new style appears.
 
 ### Tests for User Story 3
 
-- [ ] T014 [US3] `tests/assets/test_registry.py`: register a fixture style via `discover_styles(temp_images_dir, temp_manifest_path)` (not the shipped tree), assert it's discoverable and its `image_paths` are correct (SC-003). This is largely covered by T004's fixture tests — this task confirms the *exact* SC-003 framing (a style outside the shipped tree, zero production code touched) is explicitly asserted, not just implied.
-- [ ] T015 [US3] `tests/assets/test_registry.py`: the three shipped launch styles' placeholder PNGs are pairwise pixel-distinct (e.g. compare raw bytes or a coarse array-equality check) — SC-004.
+- [x] T014 [US3] `tests/assets/test_registry.py`: register a fixture style via `discover_styles(temp_images_dir, temp_manifest_path)` (not the shipped tree), assert it's discoverable and its `image_paths` are correct (SC-003). This is largely covered by T004's fixture tests — this task confirms the *exact* SC-003 framing (a style outside the shipped tree, zero production code touched) is explicitly asserted, not just implied.
+- [x] T015 [US3] `tests/assets/test_registry.py`: the three shipped launch styles' placeholder PNGs are pairwise pixel-distinct (e.g. compare raw bytes or a coarse array-equality check) — SC-004.
 
 ### Implementation for User Story 3
 
-- [ ] T016 [US3] No new implementation expected — T003's `discover_styles()` already satisfies zero-code-change extension by construction (parametrized over `images_dir`/`manifest_path`). This task is verification only; fix if T014 reveals a gap (depends on T003, T014).
+- [x] T016 [US3] No new implementation expected — T003's `discover_styles()` already satisfies zero-code-change extension by construction (parametrized over `images_dir`/`manifest_path`). This task is verification only; fix if T014 reveals a gap (depends on T003, T014).
 
 **Checkpoint**: All three user stories pass independently. Style system feature-complete.
 
@@ -102,13 +102,13 @@ call `discover_styles()` against them directly, assert the new style appears.
 
 ## Phase 6: Polish & Cross-Cutting Concerns
 
-- [ ] T017 [P] Implement deterministic image-pool indexing in `render/artist._resolve_image` for styles with multiple images: sort `image_paths` by filename, index via `hash((placement.x, placement.y, placement.size, placement.rotation)) % len(pool)` (research.md) (depends on T008).
-- [ ] T018 [P] `tests/render/test_artist.py`: reproducibility test — same seed, two full render+savefig calls, byte-identical output, using a temporarily-registered multi-image style fixture to actually exercise T017's pool-index logic (not just the single-image launch styles) (SC from quickstart.md).
-- [ ] T019 Apply `styles.toml`'s `scale` field as a multiplier on rendered cat size in `render/artist.py` (depends on T008).
-- [ ] T020 Run `quickstart.md`'s manual smoke script end-to-end and confirm all assertions pass.
-- [ ] T021 Regenerate the gallery (`python scripts/gallery.py`) and visually confirm style variety appears when `set_style("mix")` (manually verify, not an automated assertion — SC-004's "distinguishable" half of FR-008).
-- [ ] T022 Run `make check` and confirm all green.
-- [ ] T023 Update `PROGRESS.md`: mark M3 complete, note M4 (config/polish/packaging) is next and has no spec.
+- [x] T017 [P] Implement deterministic image-pool indexing in `render/artist._resolve_image` for styles with multiple images: sort `image_paths` by filename, index via `hash((placement.x, placement.y, placement.size, placement.rotation)) % len(pool)` (research.md) (depends on T008).
+- [x] T018 [P] `tests/render/test_artist.py`: reproducibility test — same seed, two full render+savefig calls, byte-identical output, using a temporarily-registered multi-image style fixture to actually exercise T017's pool-index logic (not just the single-image launch styles) (SC from quickstart.md).
+- [x] T019 Apply `styles.toml`'s `scale` field as a multiplier on rendered cat size in `render/artist.py` (depends on T008).
+- [x] T020 Run `quickstart.md`'s manual smoke script end-to-end and confirm all assertions pass.
+- [x] T021 Regenerate the gallery (`python scripts/gallery.py`) and visually confirm style variety appears when `set_style("mix")` (manually verify, not an automated assertion — SC-004's "distinguishable" half of FR-008).
+- [x] T022 Run `make check` and confirm all green.
+- [x] T023 Update `PROGRESS.md`: mark M3 complete, note M4 (config/polish/packaging) is next and has no spec.
 
 ---
 
