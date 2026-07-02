@@ -23,15 +23,19 @@ names.
 - Any unregistered name anywhere in the input → raises `ValueError` immediately, naming the bad
   style (spec Assumption: fail-fast, not deferred).
 
-## `render.artist._resolve_image(style: str) -> np.ndarray` (contract addition over M2)
+## `render.artist._resolve_image(placement: Placement) -> tuple[np.ndarray, float]` (contract addition over M2)
 
-**Preconditions**: `style` is a name already validated by `resolve_style_names` (the render
-layer never calls this with a raw unvalidated user string).
+**Preconditions**: `placement.style` is a name already validated by `resolve_style_names` (the
+render layer never calls this with a raw unvalidated user string).
 
 **Postconditions**:
-- Returns an image array sampled from `style`'s pool. Given the *same full `Placement`* (all
-  fields — x, y, size, rotation, style), the same image is always chosen (deterministic hash of
-  the placement's own fields against a filename-sorted pool — see research.md), so a seeded
-  `place_cats()` call's reproducibility guarantee (M1 FR-004) extends losslessly through image
-  selection: same seed → same placements → same images, every time.
+- Returns `(image, clamped_scale)`. The image is sampled from `placement.style`'s pool; given
+  the *same full `Placement`* (all fields — x, y, size, rotation, style), the same image is
+  always chosen (deterministic hash of the placement's own fields against a filename-sorted
+  pool — see research.md), so a seeded `place_cats()` call's reproducibility guarantee (M1
+  FR-004) extends losslessly through image selection: same seed → same placements → same
+  images, every time.
+- `clamped_scale` is `min(style_info.scale, 1.0)` — never exceeds 1.0, regardless of the
+  manifest's declared `scale` (spec Assumptions; see data-model.md's 2026-07-02 addendum for how
+  this composes with rotation rendering).
 - Never raises for a style with exactly one image (degenerate but valid pool).

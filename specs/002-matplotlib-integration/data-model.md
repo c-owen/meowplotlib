@@ -38,9 +38,13 @@ matplotlib objects. The state introduced is:
 ### `render/artist.py`
 
 - `draw_placements(figure: Figure, placements: list[Placement]) -> None` — for each `Placement`,
-  resolves an image (M2: internal stub per research.md; M3: real registry lookup) and adds it to
-  the figure via `figure.add_artist(...)` (an `AnnotationBbox`/`OffsetImage` or equivalent),
-  positioned/sized/rotated per the placement.
+  resolves an image (M2: internal stub per research.md; M3: real registry lookup) and adds it as
+  its own tiny inset `Axes` (`figure.add_axes(...)`, tagged `_catplotlib_cat = True`) positioned
+  at the placement's exact figure-fraction bbox — **not** `AnnotationBbox`/`OffsetImage`, whose
+  point-space `zoom` parameter caused real (if sub-pixel) overlaps with protected content; see
+  `specs/002-matplotlib-integration`'s implementation commit history and
+  `specs/003-style-system/data-model.md`'s 2026-07-02 addendum for the rotation-rendering
+  follow-up that further changed how the image is drawn within that axes.
 
 ## State transitions
 
