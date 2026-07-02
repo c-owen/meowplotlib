@@ -24,8 +24,8 @@ _installed = False
 # Guaranteed clear space (figure-fraction) between each axes' tight bbox and every figure edge,
 # so cats can land on all four sides rather than only wherever the chart's default layout
 # happens to leave room. Sized comfortably above the largest rotated cat footprint (max size
-# 0.08, up to ~1.41x when rotated ~= 0.113) so a typical cat fits without shrinking.
-_GUARANTEED_MARGIN = 0.10
+# 0.16, up to ~1.41x when rotated ~= 0.226) so a typical cat fits without shrinking.
+_GUARANTEED_MARGIN = 0.14
 
 
 def install() -> None:
@@ -61,7 +61,7 @@ def _decorate(figure: Figure, density: str, seed: int | None, style: str | list[
         return
     config = PlacementConfig(
         density=density,  # type: ignore[arg-type]
-        size_range=(0.03, 0.08),
+        size_range=(0.06, 0.16),
         seed=seed,
         styles=styles,
     )
