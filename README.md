@@ -1,6 +1,6 @@
 # catplotlib
 
-_before/after image goes here — placeholder until v1 sign-off_
+![Before and after adding catplotlib to a matplotlib chart](docs/before_after.png)
 
 Whimsical cat decorations for `matplotlib` figures. One import, zero required config.
 
@@ -40,5 +40,12 @@ with catplotlib.config(enabled=False):
 | `set_seed` | `int` \| `None` | lock or randomize placement |
 | `enable()` / `disable()` | — | session on/off switch |
 | `config(**overrides)` | context manager | temporary overrides for one block |
+
+## Art
+
+v1 ships with three programmatically-generated placeholder styles (`classic`, `derp`, `chonk`)
+so development never blocked on final art. Swapping in real artwork is a pure file-drop under
+`src/catplotlib/assets/images/<style>/` plus one `styles.toml` entry — no code changes. See
+[ATTRIBUTION.md](ATTRIBUTION.md) for sources.
 
 See `STANDUP_PLAN.md` and `constitution.md` for the full project contract.
