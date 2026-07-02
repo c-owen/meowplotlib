@@ -5,6 +5,7 @@ from __future__ import annotations
 from collections.abc import Iterator
 from contextlib import contextmanager
 
+from catplotlib.assets.registry import resolve_style_names
 from catplotlib.core.config import get_config
 
 
@@ -19,7 +20,12 @@ def disable() -> None:
 
 
 def set_style(style: str | list[str]) -> None:
-    """Select a single style, a mix of styles, or "mix" for all styles."""
+    """Select a single style, a mix of styles, or "mix" for all styles.
+
+    Validates eagerly: an unregistered style name raises immediately, rather than
+    surfacing as a silent absence of cats at the next render.
+    """
+    resolve_style_names(style)  # fail-fast; "mix" always validates, resolved fresh at render time
     get_config().style = style
 
 

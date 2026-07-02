@@ -11,6 +11,7 @@ from typing import TYPE_CHECKING, Any
 
 from matplotlib.figure import Figure
 
+from catplotlib.assets.registry import resolve_style_names
 from catplotlib.core.config import get_config
 from catplotlib.core.placement import PlacementConfig, place_cats
 from catplotlib.render import artist, bboxes
@@ -48,7 +49,9 @@ def _decorate(figure: Figure, density: str, seed: int | None, style: str | list[
     # fixed font size, a small figure's tick/axis labels occupy a larger fraction of the unit
     # square, shrinking available border area exactly as intended.
     exclusions = bboxes.extract_exclusions(figure)
-    styles = _style_list(style)
+    styles = resolve_style_names(style)
+    if not styles:
+        return
     config = PlacementConfig(
         density=density,  # type: ignore[arg-type]
         size_range=(0.03, 0.08),
@@ -57,11 +60,3 @@ def _decorate(figure: Figure, density: str, seed: int | None, style: str | list[
     )
     placements = place_cats(1.0, 1.0, exclusions, config)
     artist.draw_placements(figure, placements)
-
-
-def _style_list(style: str | list[str]) -> list[str]:
-    if isinstance(style, list):
-        return style
-    if style == "mix":
-        return ["classic", "derp", "chonk"]
-    return [style]
