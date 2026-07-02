@@ -1,31 +1,54 @@
 # Progress
 
-**Current milestone:** M3 — COMPLETE (style system & assets), PLUS a post-M3 rotation-rendering feature the user explicitly requested as v1 scope (not deferred). M0/M1/M2 also complete. Starting M4 next.
-**Last completed:** (a) M3's full lightweight speckit flow — see prior entries below/in git log. (b) Rotation now actually renders: user reviewed the M3 gallery, asked for "whimsical rotation, size and placement" as a v1 feature rather than deferred. Changed `core/placement.py`'s `Placement.bbox()` to reserve the axis-aligned bounding box of the ROTATED square (not the unrotated one), which keeps constitution #2's non-overlap guarantee exactly intact once rotation is genuinely rendered; updated `place_cats()`'s candidate loop to sample rotation before position so the position bounds already account for the rotation-dependent half-extent. `render/artist.py` now draws each cat at its true size within a correctly-sized axes and applies an `Affine2D` rotation transform in data-space, so the rendered rotated footprint exactly matches what M1 reserved. Verified the reference-canvas 3/6/12 sparse/normal/chaotic counts held exactly (no retuning needed) and all 65 tests still pass. Documented as a dated addendum in `specs/001-core-placement-engine/research.md` and `data-model.md` (this supersedes that spec's original "rotation is metadata only, not used in collision" decision). Gallery regenerated — rotation is now clearly visible.
-**Next task:** M4 — config surface, polish, packaging (no spec, direct implementation per STANDUP_PLAN.md §5). Remaining work: `api.py` is already functionally complete (enable/disable/set_style/set_density/set_seed/config all implemented across M0-M3) — M4 is mostly a verification + README + packaging pass: (1) README before/after image + quickstart + config table, (2) build sdist/wheel and verify a clean-venv `pip install` puts assets in place via `importlib.resources` (already used throughout, but never tested end-to-end from an installed wheel rather than editable install), (3) final pass of STANDUP_PLAN.md §10's v1 Definition of Done checklist.
+**Status: v1 (P0 scope) shipped.** M0-M4 all complete per STANDUP_PLAN.md. `make check` green
+(76 passed, 1 skipped — seaborn not installed). Wheel builds and installs cleanly; packaging
+verified end to end (`tests/test_packaging.py`). README has a real before/after hero image.
 
-## In-flight design decisions
-- Placement engine tuning constants (edge margin 3% of smaller canvas dimension, density divisors sparse=0.131/normal=0.0656/chaotic=0.0328 tuned to yield ~3/6/12 cats on a unit-square reference canvas with a 70%-coverage centered exclusion, max 200 target placements as a defensive cap) live in `src/catplotlib/core/placement.py` module constants — not yet exposed as user-tunable, per STANDUP_PLAN.md's out-of-scope list (size/placement-mode controls beyond defaults are P1, not v1).
-- **Superseded 2026-07-02**: collision model was originally AABB-of-unrotated-square-only (rotation stored as metadata, not rendered or used in collision). Now `Placement.bbox()` reserves the AABB of the ROTATED square instead — see the dated addendum in `specs/001-core-placement-engine/research.md`. Rotation now genuinely renders (see top of this file).
-- Each cat is rendered as its own inset `Axes` (`figure.add_axes(...)`) positioned at the placement's exact figure-fraction bbox, tagged `_catplotlib_cat = True` so `render/bboxes.py` excludes cats' own axes from future exclusion extraction. This was a deliberate change from an earlier `OffsetImage`/`AnnotationBbox` approach — that used a `zoom` parameter that scales in point-space, not figure-fraction space, which caused real (if sub-pixel) overlaps with protected content that only showed up in the chart-type x figsize matrix test, not in simpler tests. Any future artist-drawing rework must keep the rendered footprint exactly matching `Placement.bbox()`, not approximate it via a DPI-dependent scale factor.
-- `Figure.draw` is patched exactly once, permanently, at import time (never unpatched). `enable()`/`disable()` only flip `Config.enabled`, which the wrapper checks first and is a pure pass-through when `False`. Discussed explicitly with the user (who initially flagged discomfort with "permanently changing matplotlib") — confirmed this is the intended, simplest design given a zero-code-change activation model requires a class-level patch either way.
-- M2's `render/artist.py` uses a hardcoded single-style stub (`_resolve_image` always returns `classic_01.png` regardless of `Placement.style`) since M3 (style registry) doesn't exist yet. This is called out in M2's spec Assumptions and is the first thing M3 should replace. **Resolved in M3** — see below.
-- M3's `styles.toml` `scale` field is still applied but clamped to `min(scale, 1.0)` — it can only ever shrink a cat's rendered footprint within the bbox M1 reserved, never grow it. Chonk's manifest `scale = 1.15` therefore still has NO visible effect (clamped down to 1.0) — chonk cats render at the same size as classic/derp, not visibly "chonkier". This is a DIFFERENT gap than the rotation one (now resolved, see top of file): making scale > 1.0 work would require threading style-specific scale into `core/placement.py`'s collision math, which conflicts with M1's "styles are opaque strings to core" boundary decision. Not addressed in the rotation fix since the user's ask ("rotation, size, and placement") was read as covering the size variety that already existed via `size_range`, not this narrower single-style-bigger request — flag if that reading was wrong.
+**Next task**: none outstanding for v1 as scoped. The only remaining work is external to this
+repo — Chuck drops real cat PNGs into `src/catplotlib/assets/images/<style>/` (pure file-drop
+per the M3 contract). Regenerate `scripts/gallery.py` afterward and flag anything that looks off
+(scale, transparency); no code changes should be needed if the M3 contract held. If picking this
+back up, start by re-reading this file, then `git log --oneline -20`.
 
-## Known open issues
-- `make` is not installed on this Windows box; verified the check pipeline by running its four commands directly (ruff check, ruff format --check, mypy, pytest) instead of via `make check`. Works fine in CI/any Unix env; local devs on Windows without `make` should run the four commands directly or install `make` (e.g. via choco/scoop/MSYS2).
-- `git config core.symlinks` is false on this machine, so `AGENTS.md` was created as a plain-file copy of `CLAUDE.md`, not a real symlink. Keep both in sync manually if CLAUDE.md changes materially (or revisit once symlinks are enabled).
-- Running `uvx --from git+...` piped through `| tail -N` in a background shell hides all output until the process exits (pipe buffering) and looked like a 16-minute hang. Non-piped, it took ~30s once uv's build cache was warm. Avoid piping uvx/long-running CLI output through tail/head when backgrounding — read output directly or run in foreground.
-- `pyproject.toml`'s `[tool.mypy] python_version` is set to `"3.12"`, not `"3.10"` (the package's actual `requires-python` floor) — numpy 2.5's bundled stubs use PEP 695 syntax mypy can only parse at 3.12+, regardless of the runtime version being type-checked for. This is a mypy/stub-parsing quirk, not a statement that the package needs Python 3.12 at runtime. Revisit if this causes false negatives for genuinely-3.10/3.11-only code (unlikely for this codebase's simple type usage).
+## Known limitations (not v1 blockers, but real gaps)
+
+- `styles.toml`'s `scale` field is clamped to `min(scale, 1.0)` in `render/artist.py` — it can
+  only shrink a cat's footprint within the bbox `core/placement.py` reserved, never grow it.
+  Chonk's manifest `scale = 1.15` therefore has no visible effect. Rotation was fixed to render
+  properly (see below) since the user asked for it explicitly; this narrower "make one style
+  visually bigger" case was not — would need style-specific scale threaded into `core/`'s
+  collision math, conflicting with M1's "styles are opaque strings to core" design boundary.
+- Style variety is currently 3 programmatic placeholders (`classic`/`derp`/`chonk`), not real
+  art — see ATTRIBUTION.md and the note above.
+
+## Design decisions worth knowing before touching `core/` or `render/`
+
+- `Placement.bbox()` (`core/placement.py`) reserves the AABB of the ROTATED square, not the
+  unrotated one — this was a mid-project design change (see dated addendum in
+  `specs/001-core-placement-engine/research.md`) after the user asked for rotation to actually
+  render rather than stay metadata-only. `render/artist.py` draws each cat at its true size
+  within that (larger) reserved axes and applies an `Affine2D` rotation transform in data-space.
+  Any future change to placement or rendering geometry must keep the rendered footprint inside
+  what `bbox()` reserves — this is the constitution #2 non-overlap guarantee's actual mechanism.
+- Each cat is its own tiny inset `Axes` (`figure.add_axes(...)`, tagged `_catplotlib_cat = True`
+  so `render/bboxes.py` excludes it from exclusion extraction) — not `AnnotationBbox`/
+  `OffsetImage`, whose point-space `zoom` caused real sub-pixel overlaps that only the chart-
+  matrix test caught.
+- `Figure.draw` is patched exactly once, permanently, at import time. `enable()`/`disable()`
+  only flip `Config.enabled`, which the wrapper checks first and is a pure pass-through when
+  `False` — this is what makes disabled output byte-identical to unpatched matplotlib.
+- `pyproject.toml`'s `[tool.mypy] python_version` is `"3.12"`, not the package's `requires-python`
+  floor of `"3.10"` — numpy's bundled stubs need PEP 695 syntax mypy can only parse at 3.12+.
+  Not a statement that the package needs 3.12 at runtime.
 
 ## Rules to remember
+
 - No AI tool/assistant listed as commit author or co-author, ever (constitution.md #10).
 - `core/` stays pure — no matplotlib import, no I/O.
-- The `speckit-*` skills installed under `.claude/skills/` are not directly invocable via the
-  Skill tool in this environment (added mid-session, not in the session's skill snapshot) —
-  read each `SKILL.md` and follow its procedure manually. Worked fine for M1, M2, and M3's
-  full specify/(clarify)/plan/tasks flow.
-- For matplotlib-internals questions (draw hooks, bbox extraction, backend behavior), dispatch
-  an Explore subagent to read the installed matplotlib source directly rather than relying on
-  general knowledge — this caught the exact `Figure.draw`/`savefig` call chain and confirmed
-  `get_tightbbox()` doesn't need a prior draw pass, both of which shaped the M2 spec directly.
+- The `speckit-*` skills under `.claude/skills/` were not directly invocable via the Skill tool
+  in this session (installed mid-session) — read each `SKILL.md` and follow its procedure by
+  hand if this recurs.
+- For matplotlib-internals questions, dispatch an Explore subagent to read the installed
+  matplotlib source directly rather than relying on general knowledge.
+- `make` is not installed on this Windows dev box — run the four `make check` commands directly
+  (ruff check, ruff format --check, mypy, pytest) if `make` isn't available.
