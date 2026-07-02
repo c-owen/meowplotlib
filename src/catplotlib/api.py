@@ -19,18 +19,33 @@ def disable() -> None:
     get_config().enabled = False
 
 
+_VALID_DENSITIES = ("sparse", "normal", "chaotic")
+
+
+def _validate_style(style: object) -> None:
+    if not isinstance(style, str | list):
+        raise TypeError(f"style must be a str or list[str], got {type(style).__name__}")
+    resolve_style_names(style)  # fail-fast; "mix" always validates, resolved fresh at render time
+
+
+def _validate_density(density: object) -> None:
+    if density not in _VALID_DENSITIES:
+        raise ValueError(f"Unknown density: {density!r}. Valid options: {_VALID_DENSITIES}")
+
+
 def set_style(style: str | list[str]) -> None:
     """Select a single style, a mix of styles, or "mix" for all styles.
 
     Validates eagerly: an unregistered style name raises immediately, rather than
     surfacing as a silent absence of cats at the next render.
     """
-    resolve_style_names(style)  # fail-fast; "mix" always validates, resolved fresh at render time
+    _validate_style(style)
     get_config().style = style
 
 
 def set_density(density: str) -> None:
     """Set cat density: "sparse", "normal", or "chaotic"."""
+    _validate_density(density)
     get_config().density = density
 
 
@@ -41,7 +56,15 @@ def set_seed(seed: int | None) -> None:
 
 @contextmanager
 def config(**overrides: object) -> Iterator[None]:
-    """Temporarily override config values within a `with` block."""
+    """Temporarily override config values within a `with` block.
+
+    Applies the same validation as `set_style`/`set_density` to any overridden values.
+    """
+    if "style" in overrides:
+        _validate_style(overrides["style"])
+    if "density" in overrides:
+        _validate_density(overrides["density"])
+
     cfg = get_config()
     saved = cfg.snapshot()
     try:
