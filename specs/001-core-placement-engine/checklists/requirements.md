@@ -31,9 +31,7 @@
 
 ## Notes
 
-- Three open design questions (border-region shape/margin, cat-cat overlap policy, exact
-  density→count function shape) are intentionally left as named assumptions rather than
-  [NEEDS CLARIFICATION] markers, per STANDUP_PLAN.md §5 M1, which routes exactly these three
-  questions to `/speckit-clarify`. All acceptance-testable behavior (non-overlap with
-  exclusions, reproducibility, tier ordering, graceful degradation to zero) is fully specified
-  and does not depend on resolving them.
+- The three open design questions flagged at `/speckit-specify` time (border-region
+  shape/margin, cat-cat overlap policy, density→count function shape) were resolved in
+  `/speckit-clarify` on 2026-07-02 — see the spec's `## Clarifications` section. All
+  requirements and edge cases were updated accordingly; no open questions remain.

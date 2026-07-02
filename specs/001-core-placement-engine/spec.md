@@ -8,6 +8,14 @@
 
 **Input**: User description: "Core placement engine for catplotlib (src/catplotlib/core/placement.py and core/rng.py). Pure logic layer, no matplotlib imports, no I/O (constitution rule #1). Given canvas dimensions, a list of exclusion rectangles, and config (density tier, size range, seed, allowed styles), return a list of cat placements (x, y, size, rotation, style id) confined to the border/margin region of the canvas, never overlapping any exclusion rectangle."
 
+## Clarifications
+
+### Session 2026-07-02
+
+- Q: How should the engine define the "border region" cats can occupy, especially when axes nearly fill the figure? → A: Fixed minimum margin (~3% of canvas) from the canvas edge as a hard boundary, plus fitting whatever irregular space remains outside exclusion rectangles — however thin.
+- Q: Should placed cats be allowed to overlap each other (not exclusion zones — just each other)? → A: No — avoid cat-cat overlap. Each placed cat becomes an additional exclusion zone for subsequently placed cats within the same call.
+- Q: How should the density→count function scale with available border area? → A: Area-scaled with a per-tier multiplier — target count is derived from available border area × a per-tier multiplier (sparse < normal < chaotic), which doubles as the graceful-degradation mechanism.
+
 ## User Scenarios & Testing *(mandatory)*
 
 <!--
@@ -108,9 +116,12 @@ never force overlap with exclusions, and no exception is ever raised.
 ### Edge Cases
 
 - What happens when the exclusion list is empty (e.g., a bare figure with no axes)? The entire
-  canvas minus a minimal safety margin is available for placement.
+  canvas minus the fixed minimum edge margin is available for placement.
 - What happens when exclusion rectangles overlap each other? The engine treats their union as
   the excluded area; overlapping input is not an error.
+- What happens when a later placement in the same call can't find room that avoids both the
+  exclusion rectangles and all earlier placements in that call? It is simply not placed — the
+  engine stops short of the tier's target count rather than forcing an overlap or raising.
 - What happens when canvas width or height is zero or negative? The engine returns an empty
   placement list rather than raising.
 - What happens when the requested style list is empty? The engine returns an empty placement
@@ -129,8 +140,13 @@ never force overlap with exclusions, and no exception is ever raised.
   drawn from the allowed styles.
 - **FR-002**: The engine MUST NOT return any placement whose bounding box intersects any
   exclusion rectangle, at any density tier, for any seed, for any valid canvas size.
-- **FR-003**: The engine MUST confine all placements to the border/margin region of the canvas
-  (the area outside the exclusion rectangles' union, within canvas bounds).
+- **FR-003**: The engine MUST confine all placements to the border/margin region of the canvas,
+  defined as the area outside the exclusion rectangles' union and inset from the canvas edge by
+  a fixed minimum margin (~3% of the smaller canvas dimension); within that region the engine
+  fits placements into whatever irregular space remains, however thin.
+- **FR-003a**: The engine MUST NOT return any two placements whose bounding boxes intersect each
+  other — each placement is treated as an additional exclusion zone for subsequent placements
+  within the same call.
 - **FR-004**: WHEN the same seed and identical other inputs are supplied, the engine MUST
   produce identical output on repeated calls (same order, same values).
 - **FR-005**: WHEN no seed is supplied, the engine MUST produce non-deterministic output such
@@ -138,7 +154,9 @@ never force overlap with exclusions, and no exception is ever raised.
 - **FR-006**: The engine MUST support at least three density tiers (sparse, normal, chaotic)
   whose placement counts on a fixed reference canvas are strictly increasing in that order.
 - **FR-007**: WHEN available border area shrinks, the engine MUST reduce placement count and/or
-  size rather than violate the non-overlap guarantee (FR-002).
+  size rather than violate the non-overlap guarantees (FR-002, FR-003a). Target count per call
+  MUST be derived from available border area multiplied by a per-tier density multiplier, so
+  degradation is an emergent property of the area calculation rather than a separate rule.
 - **FR-008**: WHEN available border area is zero, the engine MUST return an empty placement
   list rather than raising an exception.
 - **FR-009**: The engine MUST behave as a pure function of its inputs — no global mutable
@@ -184,13 +202,6 @@ never force overlap with exclusions, and no exception is ever raised.
   asset registry (M3); the core engine treats style identifiers as opaque strings.
 - Canvas dimensions and exclusion rectangles share one coordinate system defined by the caller
   (e.g., figure-fraction coordinates); the engine does not perform unit conversion.
-- "Border/margin region" means the canvas area outside the union of all exclusion rectangles,
-  inset by a small minimum safety margin from the canvas edge itself — exact margin and
-  border-region shape (uniform border vs. best-fit remaining slivers) are open design questions
-  to resolve in `/speckit-clarify` before planning.
-- Cat-to-cat overlap policy (whether two placed cats may visually overlap each other) is an open
-  design question to resolve in `/speckit-clarify`; this spec only constrains overlap with
-  exclusion rectangles, not between placements.
-- The density→count function's exact shape (e.g., linear vs. stepped, and how it scales with
-  available border area) is an open design question to resolve in `/speckit-clarify`; this spec
-  only constrains the ordering (sparse < normal < chaotic) and the degradation direction.
+- The exact fixed margin percentage (~3%) and the per-tier density multipliers are tunable
+  constants to be chosen during `/speckit-plan`/implementation, not fixed by this spec; this
+  spec only constrains their existence and the resulting ordering/degradation behavior.
