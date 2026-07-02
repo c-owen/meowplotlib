@@ -10,3 +10,7 @@ dist/
 build/
 .hypothesis/
 gallery_output/
+
+# Local Claude Code state that may contain credentials/tokens — settings.json itself is tracked.
+.claude/settings.local.json
+.claude/.credentials.json
