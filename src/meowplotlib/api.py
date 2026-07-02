@@ -5,8 +5,8 @@ from __future__ import annotations
 from collections.abc import Iterator
 from contextlib import contextmanager
 
-from catplotlib.assets.registry import resolve_style_names
-from catplotlib.core.config import get_config
+from meowplotlib.assets.registry import resolve_style_names
+from meowplotlib.core.config import get_config
 
 
 def enable() -> None:

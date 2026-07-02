@@ -1,4 +1,4 @@
-# catplotlib Constitution
+# meowplotlib Constitution
 
 This file mirrors the project's canonical [constitution.md](../../constitution.md) at the repo
 root, adapted to Spec Kit's principle format so `/speckit.plan` and friends can reference it
@@ -7,7 +7,7 @@ directly. The root file is the source of truth; update both together.
 ## Core Principles
 
 ### I. Core Purity
-`src/catplotlib/core/` SHALL NOT import matplotlib or perform I/O. All matplotlib knowledge lives
+`src/meowplotlib/core/` SHALL NOT import matplotlib or perform I/O. All matplotlib knowledge lives
 in `render/`. Enforced by `tests/core/test_purity.py`.
 
 ### II. Non-Destructive Rendering (NON-NEGOTIABLE)
@@ -20,11 +20,11 @@ WHEN the same seed is set, repeated renders of the same figure SHALL produce ide
 placements. WHEN no seed is set, consecutive renders SHALL visibly differ.
 
 ### IV. Clean Disable
-WHEN `catplotlib.disable()` has been called, figure output SHALL be byte-identical to output
-without catplotlib imported.
+WHEN `meowplotlib.disable()` has been called, figure output SHALL be byte-identical to output
+without meowplotlib imported.
 
 ### V. Never Raise on Import
-`import catplotlib` SHALL never raise, regardless of backend or headless environment. Enforced
+`import meowplotlib` SHALL never raise, regardless of backend or headless environment. Enforced
 under the `Agg` backend.
 
 ### VI. Minimal Footprint

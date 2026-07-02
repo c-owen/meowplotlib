@@ -1,11 +1,11 @@
-"""Tests for catplotlib.render.bboxes — see specs/002-matplotlib-integration/."""
+"""Tests for meowplotlib.render.bboxes — see specs/002-matplotlib-integration/."""
 
 from __future__ import annotations
 
 import matplotlib.pyplot as plt
 
-import catplotlib
-from catplotlib.render.bboxes import ensure_minimum_margin, extract_exclusions
+import meowplotlib
+from meowplotlib.render.bboxes import ensure_minimum_margin, extract_exclusions
 
 
 def test_extract_exclusions_covers_axes_and_labels() -> None:
@@ -43,7 +43,7 @@ def test_extract_exclusions_empty_for_bare_figure() -> None:
 
 
 def test_ensure_minimum_margin_guarantees_all_four_sides() -> None:
-    catplotlib.disable()  # avoid the hook's own automatic ensure_minimum_margin call
+    meowplotlib.disable()  # avoid the hook's own automatic ensure_minimum_margin call
     fig, ax = plt.subplots(figsize=(6.4, 4.8))
     ax.plot([1, 2, 3], [1, 4, 9])
     ax.set_xlabel("x")
@@ -64,7 +64,7 @@ def test_ensure_minimum_margin_guarantees_all_four_sides() -> None:
 
 
 def test_ensure_minimum_margin_does_not_grow_already_generous_margin() -> None:
-    catplotlib.disable()  # avoid the hook's own automatic ensure_minimum_margin call
+    meowplotlib.disable()  # avoid the hook's own automatic ensure_minimum_margin call
     fig, ax = plt.subplots(figsize=(6.4, 4.8))
     ax.plot([1, 2, 3], [1, 4, 9])
     fig.canvas.draw()

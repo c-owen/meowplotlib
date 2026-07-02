@@ -9,8 +9,8 @@ import pytest
 
 matplotlib.use("Agg")
 
-import catplotlib  # noqa: E402,F401 - import registers the hook; must follow matplotlib.use()
-from catplotlib.core.config import get_config  # noqa: E402
+import meowplotlib  # noqa: E402,F401 - import registers the hook; must follow matplotlib.use()
+from meowplotlib.core.config import get_config  # noqa: E402
 
 
 @pytest.fixture(autouse=True)

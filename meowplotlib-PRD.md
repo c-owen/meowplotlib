@@ -1,4 +1,4 @@
-# catplotlib — Product Requirements Document
+# meowplotlib — Product Requirements Document
 
 **Status:** Draft v1
 **Owner:** Product
@@ -8,7 +8,7 @@
 
 ## Overview
 
-`catplotlib` is a Python package that adds whimsical cat artwork to the borders of `matplotlib` figures with a single import. It is a "decorator" library in the spirit of `seaborn` — it doesn't replace `matplotlib`, it sits on top of it and changes how figures render, with zero required changes to existing plotting code.
+`meowplotlib` is a Python package that adds whimsical cat artwork to the borders of `matplotlib` figures with a single import. It is a "decorator" library in the spirit of `seaborn` — it doesn't replace `matplotlib`, it sits on top of it and changes how figures render, with zero required changes to existing plotting code.
 
 The product is unapologetically a novelty/delight tool, not a data-viz utility. Its entire value is emotional and social: it makes plots more fun to look at, more memorable in a talk or notebook, and more shareable. Success looks like people screenshotting their cat-bordered charts and posting them, not like measurable gains in "data comprehension."
 
@@ -30,13 +30,13 @@ There is a long-running tradition of novelty Python packages (`antigravity`, `th
 
 1. **Trivial adoption**: A user can go from "never heard of this" to "cats on my plot" in under one minute — a single `pip install` and a single `import` line, no required configuration.
 2. **Delight and shareability**: The default output should be genuinely charming and screenshot-worthy without any tuning by the user.
-3. **Non-destructive by default**: Adding `catplotlib` to an existing project must never obscure data, or alter chart semantics (axes, legends, data points remain fully readable and unchanged). Catplotlib may slightly resize the plot area within the figure to guarantee cats have room to land on all four sides — a deliberate, bounded exception to "never touch layout," not a loophole for arbitrary changes.
+3. **Non-destructive by default**: Adding `meowplotlib` to an existing project must never obscure data, or alter chart semantics (axes, legends, data points remain fully readable and unchanged). Meowplotlib may slightly resize the plot area within the figure to guarantee cats have room to land on all four sides — a deliberate, bounded exception to "never touch layout," not a loophole for arbitrary changes.
 4. **Configurable whimsy**: Users who want more control (density, art style, placement, randomness seed) can get it through a small, discoverable configuration surface — without needing that configuration to get a good default result.
 5. **A library of distinct, recognizable cat "styles"** (e.g. classic, derp, chonk, and other meme-inspired variants) that users can select or mix, so the tool has replay value rather than being a one-joke novelty.
 
 ### Non-Goals
 
-- **Not a charting library.** `catplotlib` will never provide its own plot types, data transforms, or replace `matplotlib`/`seaborn` for actual visualization work. Out of scope permanently.
+- **Not a charting library.** `meowplotlib` will never provide its own plot types, data transforms, or replace `matplotlib`/`seaborn` for actual visualization work. Out of scope permanently.
 - **Not pursuing statistical/appearance neutrality.** Unlike `seaborn`, this tool is not trying to be "safe" for professional or academic publication by default — that's a possible configuration state (e.g. "off"), not the design center.
 - **Not building original character art in-house for v1.** We are not standing up an illustration pipeline or commissioning original mascot art as part of this release; v1 ships with a small set of externally-sourced or provided art assets. Custom/commissioned art is a future consideration, not a v1 requirement.
 - **Not supporting plotting libraries other than `matplotlib`** (e.g. Plotly, Bokeh, Altair) in v1. Seaborn compatibility is in scope only because Seaborn is built directly on `matplotlib` figures/axes.

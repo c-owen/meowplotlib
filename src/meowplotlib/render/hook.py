@@ -11,10 +11,10 @@ from typing import TYPE_CHECKING, Any
 
 from matplotlib.figure import Figure
 
-from catplotlib.assets.registry import resolve_style_names
-from catplotlib.core.config import get_config
-from catplotlib.core.placement import PlacementConfig, place_cats
-from catplotlib.render import artist, bboxes
+from meowplotlib.assets.registry import resolve_style_names
+from meowplotlib.core.config import get_config
+from meowplotlib.core.placement import PlacementConfig, place_cats
+from meowplotlib.render import artist, bboxes
 
 if TYPE_CHECKING:
     from collections.abc import Callable
@@ -40,9 +40,9 @@ def install() -> None:
     @functools.wraps(original_draw)
     def wrapped_draw(self: Figure, renderer: Any, *args: Any, **kwargs: Any) -> Any:
         config = get_config()
-        if config.enabled and not getattr(self, "_catplotlib_decorated", False):
+        if config.enabled and not getattr(self, "_meowplotlib_decorated", False):
             _decorate(self, config.density, config.seed, config.style)
-            self._catplotlib_decorated = True  # type: ignore[attr-defined]
+            self._meowplotlib_decorated = True  # type: ignore[attr-defined]
         return original_draw(self, renderer, *args, **kwargs)
 
     Figure.draw = wrapped_draw  # type: ignore[assignment]

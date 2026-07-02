@@ -1,11 +1,11 @@
-"""Tests for catplotlib.core.placement — see specs/001-core-placement-engine/."""
+"""Tests for meowplotlib.core.placement — see specs/001-core-placement-engine/."""
 
 from __future__ import annotations
 
 from hypothesis import given, settings
 from hypothesis import strategies as st
 
-from catplotlib.core.placement import PlacementConfig, Rect, place_cats
+from meowplotlib.core.placement import PlacementConfig, Rect, place_cats
 
 DENSITIES: tuple[str, ...] = ("sparse", "normal", "chaotic")
 

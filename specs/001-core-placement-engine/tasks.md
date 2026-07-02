@@ -17,14 +17,14 @@ implemented and verified independently, though all four share one underlying alg
 
 ## Path Conventions
 
-Single project. `src/catplotlib/core/`, `tests/core/` — already scaffolded in M0.
+Single project. `src/meowplotlib/core/`, `tests/core/` — already scaffolded in M0.
 
 ---
 
 ## Phase 1: Setup
 
-**Purpose**: Nothing new required — M0 already created `src/catplotlib/core/placement.py`,
-`src/catplotlib/core/rng.py`, and `tests/core/` as empty/stub files, and `hypothesis` is already
+**Purpose**: Nothing new required — M0 already created `src/meowplotlib/core/placement.py`,
+`src/meowplotlib/core/rng.py`, and `tests/core/` as empty/stub files, and `hypothesis` is already
 a dev dependency in `pyproject.toml`.
 
 - [x] T001 Confirm `hypothesis` is importable in the active venv (`python -c "import hypothesis"`); no code change expected.
@@ -37,9 +37,9 @@ a dev dependency in `pyproject.toml`.
 
 **⚠️ CRITICAL**: No user story implementation can begin until this phase is complete.
 
-- [x] T002 [P] Implement `Rect` frozen dataclass with `intersects()` in `src/catplotlib/core/placement.py` (per data-model.md).
-- [x] T003 [P] Implement `PlacementConfig` and `Placement` frozen dataclasses (with `Placement.bbox()`) in `src/catplotlib/core/placement.py` (per data-model.md).
-- [x] T004 [P] Implement seeded RNG wrapper in `src/catplotlib/core/rng.py`: a function that returns a `random.Random` instance from an `int | None` seed, per research.md's "stdlib random.Random" decision.
+- [x] T002 [P] Implement `Rect` frozen dataclass with `intersects()` in `src/meowplotlib/core/placement.py` (per data-model.md).
+- [x] T003 [P] Implement `PlacementConfig` and `Placement` frozen dataclasses (with `Placement.bbox()`) in `src/meowplotlib/core/placement.py` (per data-model.md).
+- [x] T004 [P] Implement seeded RNG wrapper in `src/meowplotlib/core/rng.py`: a function that returns a `random.Random` instance from an `int | None` seed, per research.md's "stdlib random.Random" decision.
 - [x] T005 [P] Set up `tests/core/test_placement.py` with `hypothesis` strategies for canvas sizes (including zero/negative), exclusion rectangle lists (0-N, including overlapping), density tiers, and optional seeds — no test bodies yet, just the shared strategies module-level.
 
 **Checkpoint**: `Rect`, `PlacementConfig`, `Placement`, and the RNG helper exist and are unit-importable; `tests/core/test_purity.py` from M0 still passes (no matplotlib import introduced).
@@ -66,10 +66,10 @@ every pair of placements.
 
 ### Implementation for User Story 1
 
-- [x] T010 [US1] Implement the fixed edge-margin band (~3% of the smaller canvas dimension) as an implicit exclusion in `place_cats()`, `src/catplotlib/core/placement.py` (depends on T002-T004).
-- [x] T011 [US1] Implement rejection-sampling candidate placement (random center/size within size_range, tested against margin + exclusions + already-accepted placements) in `src/catplotlib/core/placement.py` (depends on T010).
-- [x] T012 [US1] Implement shrink-on-failure retry loop (bounded attempts, then shrink size by fixed factor down to size_range minimum, then skip the candidate) in `src/catplotlib/core/placement.py` (depends on T011).
-- [x] T013 [US1] Wire `place_cats()` public function signature per contracts/placement-api.md, handling the `canvas_width <= 0`, `canvas_height <= 0`, and empty-`styles` early-return cases (FR-008, postconditions 2-3), in `src/catplotlib/core/placement.py` (depends on T012).
+- [x] T010 [US1] Implement the fixed edge-margin band (~3% of the smaller canvas dimension) as an implicit exclusion in `place_cats()`, `src/meowplotlib/core/placement.py` (depends on T002-T004).
+- [x] T011 [US1] Implement rejection-sampling candidate placement (random center/size within size_range, tested against margin + exclusions + already-accepted placements) in `src/meowplotlib/core/placement.py` (depends on T010).
+- [x] T012 [US1] Implement shrink-on-failure retry loop (bounded attempts, then shrink size by fixed factor down to size_range minimum, then skip the candidate) in `src/meowplotlib/core/placement.py` (depends on T011).
+- [x] T013 [US1] Wire `place_cats()` public function signature per contracts/placement-api.md, handling the `canvas_width <= 0`, `canvas_height <= 0`, and empty-`styles` early-return cases (FR-008, postconditions 2-3), in `src/meowplotlib/core/placement.py` (depends on T012).
 
 **Checkpoint**: User Story 1 fully functional — `place_cats()` never violates exclusions, margin, or cat-cat overlap. All T006-T009 tests pass.
 
@@ -92,7 +92,7 @@ differ.
 
 ### Implementation for User Story 2
 
-- [x] T017 [US2] Ensure `place_cats()` threads a single `random.Random` instance (from T004's wrapper) through the entire call with no other source of randomness or global state touched, in `src/catplotlib/core/placement.py` (depends on T013; should require no algorithm change if T004-T013 were built correctly — this task is verification + any fix needed).
+- [x] T017 [US2] Ensure `place_cats()` threads a single `random.Random` instance (from T004's wrapper) through the entire call with no other source of randomness or global state touched, in `src/meowplotlib/core/placement.py` (depends on T013; should require no algorithm change if T004-T013 were built correctly — this task is verification + any fix needed).
 
 **Checkpoint**: User Stories 1 AND 2 both pass independently.
 
@@ -112,8 +112,8 @@ only density; assert strictly increasing counts.
 
 ### Implementation for User Story 3
 
-- [x] T020 [US3] Implement the area-scaled target-count formula (available border area × per-tier multiplier, tiers strictly increasing) in `src/catplotlib/core/placement.py`, feeding the candidate-count loop from T011 (depends on T013).
-- [x] T021 [US3] Tune the three per-tier multiplier constants so T018/T019 pass on the reference canvas used in quickstart.md, in `src/catplotlib/core/placement.py` (depends on T020).
+- [x] T020 [US3] Implement the area-scaled target-count formula (available border area × per-tier multiplier, tiers strictly increasing) in `src/meowplotlib/core/placement.py`, feeding the candidate-count loop from T011 (depends on T013).
+- [x] T021 [US3] Tune the three per-tier multiplier constants so T018/T019 pass on the reference canvas used in quickstart.md, in `src/meowplotlib/core/placement.py` (depends on T020).
 
 **Checkpoint**: User Stories 1-3 all pass independently.
 
@@ -135,7 +135,7 @@ non-increasing placement count, zero exceptions, and exactly zero placements at 
 
 ### Implementation for User Story 4
 
-- [x] T025 [US4] Verify the T020 area-scaled formula naturally produces zero target count at zero available area (should require no new code per research.md's design — this task is verification + any edge-case fix, e.g. clamping negative area to zero), in `src/catplotlib/core/placement.py` (depends on T020).
+- [x] T025 [US4] Verify the T020 area-scaled formula naturally produces zero target count at zero available area (should require no new code per research.md's design — this task is verification + any edge-case fix, e.g. clamping negative area to zero), in `src/meowplotlib/core/placement.py` (depends on T020).
 
 **Checkpoint**: All four user stories pass independently. Core placement engine feature-complete.
 

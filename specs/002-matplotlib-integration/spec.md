@@ -6,7 +6,7 @@
 
 **Status**: Draft
 
-**Input**: User description: "The import-time hook: intercept figure rendering so cats appear on display and savefig with zero user code changes, and can be cleanly disabled. Riskiest feature of catplotlib v1."
+**Input**: User description: "The import-time hook: intercept figure rendering so cats appear on display and savefig with zero user code changes, and can be cleanly disabled. Riskiest feature of meowplotlib v1."
 
 ## Clarifications
 
@@ -19,7 +19,7 @@
 
 ### User Story 1 - One import, cats everywhere (Priority: P1)
 
-A user with an existing matplotlib script adds a single `import catplotlib` line and nothing
+A user with an existing matplotlib script adds a single `import meowplotlib` line and nothing
 else. The next figure they display (e.g. in a notebook) or save (`savefig`) shows cat
 decorations, using the placement engine from M1.
 
@@ -27,13 +27,13 @@ decorations, using the placement engine from M1.
 nothing else in the package matters.
 
 **Independent Test**: In a fresh Python process, `import matplotlib.pyplot as plt`, `import
-catplotlib`, create a simple line plot, call `savefig` to a buffer, and confirm the saved image
+meowplotlib`, create a simple line plot, call `savefig` to a buffer, and confirm the saved image
 contains cat artwork (e.g. by asserting extra artists exist on the figure, or via pixel-level
-comparison against a no-catplotlib baseline).
+comparison against a no-meowplotlib baseline).
 
 **Acceptance Scenarios**:
 
-1. **Given** a script that only adds `import catplotlib` to existing matplotlib code, **When**
+1. **Given** a script that only adds `import meowplotlib` to existing matplotlib code, **When**
    the user calls `plt.show()` or `fig.savefig(...)`, **Then** the resulting output includes cat
    decorations placed by the M1 engine.
 2. **Given** a Jupyter-style inline display (figure rendered via its `_repr_html_`/`_repr_png_`
@@ -69,26 +69,26 @@ on the figure is identical after each pass.
 
 ### User Story 3 - Session on/off switch (Priority: P1)
 
-A user calls `catplotlib.disable()` partway through a script or notebook session. Every figure
+A user calls `meowplotlib.disable()` partway through a script or notebook session. Every figure
 saved or shown after that call is pixel-identical to what matplotlib alone would have produced —
-no cats, no leftover hooks, no side effects. Calling `catplotlib.enable()` later in the same
+no cats, no leftover hooks, no side effects. Calling `meowplotlib.enable()` later in the same
 session restores decoration for subsequently rendered figures.
 
 **Why this priority**: PRD requirement 7 (global on/off) is P0, and constitution rule #4 ties a
 dedicated byte-identity test to this exact behavior — a presenter needs to produce a
 client-facing, cat-free export from the same session that has cats everywhere else.
 
-**Independent Test**: Render and save a figure with catplotlib active; call `disable()`; render
+**Independent Test**: Render and save a figure with meowplotlib active; call `disable()`; render
 and save an equivalent fresh figure; assert the second file's bytes are identical to a baseline
-save from a process that never imported catplotlib. Call `enable()`; render and save another
+save from a process that never imported meowplotlib. Call `enable()`; render and save another
 fresh figure; assert it again contains cats.
 
 **Acceptance Scenarios**:
 
-1. **Given** `catplotlib.disable()` has been called, **When** any new figure is created and
+1. **Given** `meowplotlib.disable()` has been called, **When** any new figure is created and
    saved, **Then** the saved file is byte-identical to the same figure saved with matplotlib
-   alone (no catplotlib import at all).
-2. **Given** `catplotlib.disable()` then `catplotlib.enable()` have both been called in the same
+   alone (no meowplotlib import at all).
+2. **Given** `meowplotlib.disable()` then `meowplotlib.enable()` have both been called in the same
    session, **When** a new figure is created and saved, **Then** it contains cat decorations
    again, matching the always-enabled behavior.
 3. **Given** a figure that was already decorated before `disable()` was called, **When**
@@ -116,7 +116,7 @@ assert empty intersection — the automated harness described in STANDUP_PLAN.md
 **Acceptance Scenarios**:
 
 1. **Given** any chart in the test matrix (chart type × figsize × legend presence), **When** the
-   figure is rendered with catplotlib active, **Then** no cat artist's bounding box intersects
+   figure is rendered with meowplotlib active, **Then** no cat artist's bounding box intersects
    the bounding box of the axes data area, any axis label, any tick label, or the legend.
 2. **Given** a headless environment (the `Agg` backend, no display available), **When** a figure
    is rendered and saved, **Then** decoration and bbox extraction both work without error,
@@ -126,15 +126,15 @@ assert empty intersection — the automated harness described in STANDUP_PLAN.md
 
 ### Edge Cases
 
-- What happens when `import catplotlib` occurs in a headless environment with no interactive
+- What happens when `import meowplotlib` occurs in a headless environment with no interactive
   backend configured? The import must never raise (constitution #5); decoration must still work
   for `savefig`.
 - What happens when a figure has no axes at all (a bare `Figure()` with nothing plotted)? The
   entire canvas minus the fixed edge margin is treated as available border region, per M1.
-- What happens when `catplotlib` is imported multiple times (e.g. `importlib.reload`) or the
+- What happens when `meowplotlib` is imported multiple times (e.g. `importlib.reload`) or the
   draw hook is somehow installed twice? Installation must be idempotent — a second install must
   not double-wrap `Figure.draw` (which would otherwise cause exponential decoration attempts).
-- What happens with a matplotlib figure created with `plt.figure()` before `import catplotlib`
+- What happens with a matplotlib figure created with `plt.figure()` before `import meowplotlib`
   ran? Since the hook patches the class method (`Figure.draw`), it applies to all `Figure`
   instances regardless of creation order, including ones already created before import.
 - What happens with seaborn-generated figures? Seaborn plots onto standard matplotlib
@@ -153,7 +153,7 @@ assert empty intersection — the automated harness described in STANDUP_PLAN.md
   already-decorated figure MUST NOT change the set of cat artists present on it.
 - **FR-004**: The package MUST expose `enable()` and `disable()` such that, after `disable()`,
   every subsequently rendered figure's output is byte-identical to output produced without
-  catplotlib imported at all.
+  meowplotlib imported at all.
 - **FR-005**: `enable()` called after `disable()` MUST restore decoration for figures rendered
   afterward, within the same process/session.
 - **FR-006**: The render layer MUST extract exclusion rectangles (in figure-fraction
@@ -164,8 +164,8 @@ assert empty intersection — the automated harness described in STANDUP_PLAN.md
   artwork on the figure using the currently configured style pool (M3 integration point — for
   M2, a placeholder/stub style resolution is acceptable if M3 is not yet complete; see
   Assumptions).
-- **FR-008**: `import catplotlib` MUST NOT raise under any backend, including headless (`Agg`).
-- **FR-009**: Hook installation MUST be idempotent at the process level: importing catplotlib
+- **FR-008**: `import meowplotlib` MUST NOT raise under any backend, including headless (`Agg`).
+- **FR-009**: Hook installation MUST be idempotent at the process level: importing meowplotlib
   multiple times, or any equivalent re-entry into the installation code path, MUST NOT
   double-wrap the draw method or cause repeated/duplicate decoration.
 - **FR-010**: Across the chart-type × figsize × legend-presence test matrix (line, bar, scatter,
@@ -187,16 +187,16 @@ assert empty intersection — the automated harness described in STANDUP_PLAN.md
 
 ### Measurable Outcomes
 
-- **SC-001**: In a fresh process, `import matplotlib.pyplot as plt; import catplotlib` followed
+- **SC-001**: In a fresh process, `import matplotlib.pyplot as plt; import meowplotlib` followed
   by creating and saving any figure produces a saved file containing cat artwork, in 100% of
   runs across the Agg backend.
 - **SC-002**: A figure redrawn 5 times in a row (without content changes) has an identical count
   and identical placement data for its cat artists after every redraw, in 100% of trials.
-- **SC-003**: After `catplotlib.disable()`, saved figure bytes are identical to a
-  no-catplotlib-imported baseline in 100% of trials across the chart-type test matrix.
+- **SC-003**: After `meowplotlib.disable()`, saved figure bytes are identical to a
+  no-meowplotlib-imported baseline in 100% of trials across the chart-type test matrix.
 - **SC-004**: Across the full chart-type × figsize × legend-presence matrix (STANDUP_PLAN.md §8),
   zero cat-artist/protected-element bbox intersections occur in 100% of rendered figures.
-- **SC-005**: `import catplotlib` completes without raising in 100% of runs under the `Agg`
+- **SC-005**: `import meowplotlib` completes without raising in 100% of runs under the `Agg`
   backend in a headless (no-display) environment.
 
 ## Assumptions

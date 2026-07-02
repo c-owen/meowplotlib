@@ -1,6 +1,6 @@
 """Generate the README's before/after hero image.
 
-Renders the same chart twice (plain matplotlib, then with catplotlib active) and stitches
+Renders the same chart twice (plain matplotlib, then with meowplotlib active) and stitches
 them side by side into docs/before_after.png. Regenerate after any change to placement,
 render, or asset code that would visibly affect the default output:
 
@@ -34,11 +34,11 @@ def _make_chart(ax: plt.Axes) -> None:
 
 def _render_panel(path: Path, with_cats: bool) -> None:
     if with_cats:
-        import catplotlib
+        import meowplotlib
 
-        catplotlib.set_style("mix")
-        catplotlib.set_density("chaotic")
-        catplotlib.set_seed(7)
+        meowplotlib.set_style("mix")
+        meowplotlib.set_density("chaotic")
+        meowplotlib.set_seed(7)
     fig, ax = plt.subplots(figsize=(5, 4))
     _make_chart(ax)
     fig.savefig(path, dpi=150)

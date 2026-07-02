@@ -14,7 +14,7 @@ from pathlib import Path
 if sys.version_info >= (3, 11):
     import tomllib
 else:
-    from catplotlib.assets import _toml_fallback as tomllib  # type: ignore[no-redef]
+    from meowplotlib.assets import _toml_fallback as tomllib  # type: ignore[no-redef]
 
 IMAGE_SUFFIXES = (".png",)
 
@@ -80,8 +80,8 @@ def discover_styles(images_dir: Path, manifest_path: Path) -> dict[str, StyleInf
 
 def available_styles() -> dict[str, StyleInfo]:
     """Discover styles from the package's own bundled assets tree."""
-    images_root = importlib.resources.files("catplotlib.assets") / "images"
-    manifest = importlib.resources.files("catplotlib.assets") / "styles.toml"
+    images_root = importlib.resources.files("meowplotlib.assets") / "images"
+    manifest = importlib.resources.files("meowplotlib.assets") / "styles.toml"
     with (
         importlib.resources.as_file(images_root) as images_dir,
         importlib.resources.as_file(manifest) as manifest_path,

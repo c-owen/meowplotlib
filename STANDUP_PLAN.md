@@ -1,7 +1,7 @@
-# catplotlib — Project Standup Plan
+# meowplotlib — Project Standup Plan
 
 **Handoff target:** Claude Sonnet 5 (implementing agent)
-**Inputs:** `catplotlib` PRD (Draft v1) + "Standing Up a New Project the Agentic Way" recipe (July 2026)
+**Inputs:** `meowplotlib` PRD (Draft v1) + "Standing Up a New Project the Agentic Way" recipe (July 2026)
 **Repo root:** this directory (currently empty — you are doing `git init`)
 **Scope:** Full P0 v1, stood up per the full recipe (constitution, root map, hooks, Spec Kit, spec-driven features).
 
@@ -9,11 +9,11 @@
 
 ## 1. Mission
 
-Build `catplotlib`: a pip-installable Python package that adds whimsical cat artwork to the borders of matplotlib figures via a single import. Novelty/delight product — the bar is "charming and screenshot-worthy by default," not data-viz utility. Never obscure data. See the PRD for personas and full rationale; this plan is the execution contract.
+Build `meowplotlib`: a pip-installable Python package that adds whimsical cat artwork to the borders of matplotlib figures via a single import. Novelty/delight product — the bar is "charming and screenshot-worthy by default," not data-viz utility. Never obscure data. See the PRD for personas and full rationale; this plan is the execution contract.
 
 ## 2. Resolved decisions (do not re-litigate)
 
-1. **Activation model:** opt-out global after import (PRD's assumed default). `import catplotlib` applies cats to all subsequently rendered/saved figures; `catplotlib.disable()` turns it off in-session.
+1. **Activation model:** opt-out global after import (PRD's assumed default). `import meowplotlib` applies cats to all subsequently rendered/saved figures; `meowplotlib.disable()` turns it off in-session.
 2. **Art assets:** the owner (Chuck) will manually drop image files (likely multiple images per style) into the repo. Licensing is **not** a blocker or a gate for this project — do not build licensing checks or block work on attribution. Keep a simple `ATTRIBUTION.md` listing asset sources as a courtesy, nothing more.
 3. **Until real assets arrive:** generate simple programmatic placeholder PNGs (one per style, visually distinct) so development and tests never block on assets. The asset system must make swapping placeholders for real images a pure file-drop (see §7).
 4. **Style mix default:** even weighting across styles when mixing. Ship it; adjust later on feedback.
@@ -25,7 +25,7 @@ Build `catplotlib`: a pip-installable Python package that adds whimsical cat art
 ### 3.1 Module boundaries
 
 ```
-catplotlib/
+meowplotlib/
 ├── CLAUDE.md                  # lean root map (symlink AGENTS.md → CLAUDE.md)
 ├── constitution.md            # non-negotiables (§3.2)
 ├── STANDUP_PLAN.md            # this file
@@ -35,7 +35,7 @@ catplotlib/
 ├── Makefile                   # `make check` = verify command (§3.3)
 ├── specs/                     # Spec Kit output, one folder per non-trivial feature
 ├── evals/                     # empty at start; added only on repeated observed failure (§9)
-├── src/catplotlib/
+├── src/meowplotlib/
 │   ├── __init__.py            # import-time activation + public API re-exports
 │   ├── core/                  # PURE logic — no matplotlib imports, no I/O
 │   │   ├── config.py          # config dataclass: density, style, seed, enabled, etc.
@@ -49,7 +49,7 @@ catplotlib/
 │   │   ├── registry.py        # discovers styles from the assets dir + manifest
 │   │   └── images/            # <style-name>/*.png  ← Chuck's drop-in location
 │   └── api.py                 # user-facing functions: enable/disable/set_style/set_density/set_seed/config
-├── tests/                     # mirrors src/catplotlib/
+├── tests/                     # mirrors src/meowplotlib/
 │   ├── core/
 │   ├── render/
 │   └── assets/
@@ -66,11 +66,11 @@ The `core/` vs `render/` boundary is the load-bearing one: placement math takes 
 
 Each is testable; several are enforced by hooks or tests directly.
 
-1. `src/catplotlib/core/` SHALL NOT import matplotlib or perform I/O. (Enforced: import-linter or a trivial test that greps imports.)
+1. `src/meowplotlib/core/` SHALL NOT import matplotlib or perform I/O. (Enforced: import-linter or a trivial test that greps imports.)
 2. At default settings, cat artwork SHALL NOT intersect the data area, axis labels, tick labels, or legend of any figure. (Enforced: automated bbox-intersection tests, §8.)
 3. WHEN the same seed is set, repeated renders of the same figure SHALL produce identical cat placements. (Enforced: test.)
-4. WHEN `catplotlib.disable()` has been called, figure output SHALL be byte-identical to output without catplotlib imported. (Enforced: test comparing savefig bytes.)
-5. `import catplotlib` SHALL never raise, regardless of backend or headless environment. (Enforced: test under `Agg`.)
+4. WHEN `meowplotlib.disable()` has been called, figure output SHALL be byte-identical to output without meowplotlib imported. (Enforced: test comparing savefig bytes.)
+5. `import meowplotlib` SHALL never raise, regardless of backend or headless environment. (Enforced: test under `Agg`.)
 6. The package SHALL make no network calls and add no required dependencies beyond matplotlib (numpy acceptable as transitive).
 7. Every style SHALL be defined purely by files under `assets/images/<style>/` plus a manifest entry — adding a style SHALL require zero code changes. (Enforced: test that registers a temp style dir.)
 8. `make check` SHALL pass (ruff + mypy --strict + pytest) before any task is declared done. Changes SHALL NOT lower test coverage.
@@ -143,8 +143,8 @@ The import-time hook: intercept figure rendering so cats appear on display **and
 Key spec questions for `/speckit.clarify`: interception point (wrapping `Figure.draw` vs. registering via `figure.add_artist`/draw callbacks vs. monkeypatching `show`/`savefig` — prefer the least invasive that covers both display and savefig; investigate `Figure.draw` wrapping + an idempotency guard); avoiding double-decoration on repeated draws (interactive backends redraw constantly); exclusion-zone extraction (`render/bboxes.py` — get tight bboxes of axes, labels, ticks, legends in figure coordinates; requires a draw pass to be accurate — handle that); ensuring `disable()` fully restores pristine behavior.
 
 EARS acceptance criteria:
-- WHEN a user adds only `import catplotlib` to an existing script, the next figure shown or saved SHALL include cat decorations.
-- WHEN `disable()` is called, subsequently saved figures SHALL be byte-identical to a no-catplotlib baseline; `enable()` SHALL restore the effect in the same session.
+- WHEN a user adds only `import meowplotlib` to an existing script, the next figure shown or saved SHALL include cat decorations.
+- WHEN `disable()` is called, subsequently saved figures SHALL be byte-identical to a no-meowplotlib baseline; `enable()` SHALL restore the effect in the same session.
 - Decoration SHALL be idempotent: N draw passes of one figure SHALL yield exactly one set of cats.
 - The hook SHALL work under `Agg` (headless/savefig) and at least one interactive backend, and with seaborn-generated figures.
 - WHEN rendering any chart in the test matrix (line, bar, scatter, histogram; small/default/large figsizes; with/without legend), no cat bbox SHALL intersect data/label/legend bboxes (§8 harness).
@@ -174,7 +174,7 @@ One module-level `Config` object in `core/config.py`; `api.py` functions mutate 
 To add or replace a style, drop files and edit one TOML — nothing else:
 
 ```
-src/catplotlib/assets/images/<style-name>/*.png   # transparent-background PNGs, any count ≥1
+src/meowplotlib/assets/images/<style-name>/*.png   # transparent-background PNGs, any count ≥1
 ```
 
 plus one entry in `styles.toml` (`display_name`, optional `scale`). Placeholders live in the same structure; replacing them with real images is a file swap. Record sources in `ATTRIBUTION.md` as a courtesy.

@@ -1,4 +1,4 @@
-"""Render a quick visual gallery of catplotlib output for human review.
+"""Render a quick visual gallery of meowplotlib output for human review.
 
 Not a shipped feature (STANDUP_PLAN.md explicitly scopes a public "gallery mode" as P2/out of
 v1) — this is a dev-loop tool so Chuck can judge charm/placement aesthetics from PNGs instead of
@@ -20,7 +20,7 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import numpy as np
 
-import catplotlib
+import meowplotlib
 
 OUT_DIR = Path(__file__).resolve().parent.parent / "gallery_output"
 
@@ -72,8 +72,8 @@ DENSITIES = ("sparse", "normal", "chaotic")
 
 def render_chart_type_grid() -> None:
     """One PNG per chart type, default figsize, normal density, seeded."""
-    catplotlib.set_density("normal")
-    catplotlib.set_seed(1)
+    meowplotlib.set_density("normal")
+    meowplotlib.set_seed(1)
     for name, plot_fn in CHARTS.items():
         fig, ax = plt.subplots(figsize=FIGSIZES["default"])
         plot_fn(ax)
@@ -83,26 +83,26 @@ def render_chart_type_grid() -> None:
 
 def render_density_grid() -> None:
     """Same chart at each density tier, to compare sparse/normal/chaotic side by side."""
-    catplotlib.set_seed(1)
+    meowplotlib.set_seed(1)
     for density in DENSITIES:
-        catplotlib.set_density(density)
+        meowplotlib.set_density(density)
         fig, ax = plt.subplots(figsize=FIGSIZES["default"])
         _line_chart(ax)
         fig.savefig(OUT_DIR / f"density-{density}.png", dpi=150)
         plt.close(fig)
-    catplotlib.set_density("normal")
+    meowplotlib.set_density("normal")
 
 
 def render_figsize_grid() -> None:
     """Same chart at each figsize tier, to check graceful degradation on small figures."""
-    catplotlib.set_density("chaotic")  # stress the degradation behavior
-    catplotlib.set_seed(1)
+    meowplotlib.set_density("chaotic")  # stress the degradation behavior
+    meowplotlib.set_seed(1)
     for size_name in FIGSIZES:
         fig, ax = plt.subplots(figsize=FIGSIZES[size_name])
         _bar_chart(ax)
         fig.savefig(OUT_DIR / f"figsize-{size_name}.png", dpi=150)
         plt.close(fig)
-    catplotlib.set_density("normal")
+    meowplotlib.set_density("normal")
 
 
 def main() -> None:

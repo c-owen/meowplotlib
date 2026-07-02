@@ -5,7 +5,7 @@ from __future__ import annotations
 import ast
 from pathlib import Path
 
-CORE_DIR = Path(__file__).resolve().parent.parent.parent / "src" / "catplotlib" / "core"
+CORE_DIR = Path(__file__).resolve().parent.parent.parent / "src" / "meowplotlib" / "core"
 
 BANNED_MODULE_PREFIXES = ("matplotlib",)
 BANNED_IO_MODULES = {"pathlib", "open", "io"}

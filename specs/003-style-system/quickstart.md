@@ -16,7 +16,7 @@ pytest tests/assets/ -q
 ## Manual smoke check
 
 ```python
-from catplotlib.assets.registry import available_styles, resolve_style_names
+from meowplotlib.assets.registry import available_styles, resolve_style_names
 
 styles = available_styles()
 assert set(styles) == {"classic", "derp", "chonk"}
@@ -37,11 +37,11 @@ import io
 import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
-import catplotlib
+import meowplotlib
 
-catplotlib.set_style("chonk")
-catplotlib.set_seed(1)
-catplotlib.set_density("chaotic")
+meowplotlib.set_style("chonk")
+meowplotlib.set_seed(1)
+meowplotlib.set_density("chaotic")
 
 fig, ax = plt.subplots()
 ax.plot([1, 2, 3], [1, 4, 9])

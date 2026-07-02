@@ -12,7 +12,7 @@
 
 ### User Story 1 - A single style decorates the whole figure (Priority: P1)
 
-A user calls `catplotlib.set_style("chonk")`. Every cat subsequently placed on any figure is
+A user calls `meowplotlib.set_style("chonk")`. Every cat subsequently placed on any figure is
 drawn from the "chonk" style's image pool only.
 
 **Why this priority**: PRD requirement 6's core promise — single-style selection is the simplest
@@ -34,7 +34,7 @@ cats, inspect each placed cat's resolved image path/identifier; assert all come 
 
 ### User Story 2 - Mixing styles on one figure (Priority: P1)
 
-A user calls `catplotlib.set_style(["classic", "derp"])` or `catplotlib.set_style("mix")`
+A user calls `meowplotlib.set_style(["classic", "derp"])` or `meowplotlib.set_style("mix")`
 (all styles). At typical densities, more than one style appears among the cats on a single
 figure, evenly weighted across the selected styles.
 

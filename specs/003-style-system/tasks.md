@@ -13,7 +13,7 @@ guarantee both need direct verification; lightweight scope keeps the test count 
 
 ## Path Conventions
 
-Single project. `src/catplotlib/assets/`, `src/catplotlib/render/artist.py`, `tests/assets/`.
+Single project. `src/meowplotlib/assets/`, `src/meowplotlib/render/artist.py`, `tests/assets/`.
 
 ---
 
@@ -27,8 +27,8 @@ Single project. `src/catplotlib/assets/`, `src/catplotlib/render/artist.py`, `te
 
 **Purpose**: The manifest parser and core discovery function every user story depends on.
 
-- [x] T002 [P] Implement `src/catplotlib/assets/_toml_fallback.py`: a minimal parser covering only flat `[styles.<name>]` sections with `display_name` (quoted string) and `scale` (float) keys, per research.md. No general TOML feature support — document this narrow scope in the module docstring.
-- [x] T003 Implement `StyleInfo` dataclass and `discover_styles(images_dir, manifest_path) -> dict[str, StyleInfo]` in `src/catplotlib/assets/registry.py`, using `tomllib` when `sys.version_info >= (3, 11)` else the T002 fallback; only includes styles with both a non-empty image directory and a manifest entry (depends on T002).
+- [x] T002 [P] Implement `src/meowplotlib/assets/_toml_fallback.py`: a minimal parser covering only flat `[styles.<name>]` sections with `display_name` (quoted string) and `scale` (float) keys, per research.md. No general TOML feature support — document this narrow scope in the module docstring.
+- [x] T003 Implement `StyleInfo` dataclass and `discover_styles(images_dir, manifest_path) -> dict[str, StyleInfo]` in `src/meowplotlib/assets/registry.py`, using `tomllib` when `sys.version_info >= (3, 11)` else the T002 fallback; only includes styles with both a non-empty image directory and a manifest entry (depends on T002).
 - [x] T004 [P] `tests/assets/test_registry.py`: tests for `discover_styles()` against temp fixture directories — style with both dir+manifest included; style with only one or the other excluded; empty image directory excluded; malformed manifest entry excluded without crashing other styles.
 
 **Checkpoint**: `discover_styles()` is independently correct against fixtures, not yet wired to the real shipped `assets/` tree or to `set_style()`.
@@ -49,7 +49,7 @@ image path is under `assets/images/chonk/`.
 
 ### Implementation for User Story 1
 
-- [x] T007 [US1] Implement `available_styles()` in `src/catplotlib/assets/registry.py`, calling `discover_styles()` against the real package tree via `importlib.resources` (depends on T003).
+- [x] T007 [US1] Implement `available_styles()` in `src/meowplotlib/assets/registry.py`, calling `discover_styles()` against the real package tree via `importlib.resources` (depends on T003).
 - [x] T008 [US1] Change `render/artist._resolve_image` signature from `(style: str)` to `(placement: Placement)`; look up `placement.style` via `available_styles()`, pick the (currently single, per-style) image (depends on T007).
 - [x] T009 [US1] Update `render/hook.py`'s call site to pass the full `placement`, not `placement.style`, to `_resolve_image` (depends on T008).
 
@@ -72,7 +72,7 @@ style appears among resolved cat images across a handful of seeds.
 
 ### Implementation for User Story 2
 
-- [x] T012 [US2] Implement `resolve_style_names(selection)` in `src/catplotlib/assets/registry.py` per contracts/registry-api.md (depends on T007).
+- [x] T012 [US2] Implement `resolve_style_names(selection)` in `src/meowplotlib/assets/registry.py` per contracts/registry-api.md (depends on T007).
 - [x] T013 [US2] Wire `api.set_style()` to call `resolve_style_names()` eagerly (fail-fast on bad names) and store the resolved flat list (or the raw selection, resolved lazily at each render call — pick whichever keeps `Config.style`'s existing type contract; resolve at render time in `render/hook.py._decorate` is simplest and matches M2's existing call site) (depends on T012).
 
 **Checkpoint**: User Stories 1 AND 2 both pass independently.

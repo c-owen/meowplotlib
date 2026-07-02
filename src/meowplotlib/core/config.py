@@ -7,7 +7,7 @@ from dataclasses import dataclass, fields
 
 @dataclass
 class Config:
-    """Global catplotlib configuration, mutated by api.py and read by render/hook.py."""
+    """Global meowplotlib configuration, mutated by api.py and read by render/hook.py."""
 
     enabled: bool = True
     style: str | list[str] = "mix"

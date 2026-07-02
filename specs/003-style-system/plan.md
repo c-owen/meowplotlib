@@ -78,7 +78,7 @@ specs/003-style-system/
 ### Source Code (repository root)
 
 ```text
-src/catplotlib/
+src/meowplotlib/
 ├── api.py                  # set_style(): add eager validation via registry.resolve_style_names
 ├── assets/
 │   ├── registry.py          # discover_styles(), available_styles(), resolve_style_names()

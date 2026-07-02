@@ -1,4 +1,4 @@
-# Contract: `catplotlib.assets.registry`
+# Contract: `meowplotlib.assets.registry`
 
 ## `discover_styles(images_dir, manifest_path) -> dict[str, StyleInfo]`
 

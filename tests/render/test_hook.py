@@ -1,4 +1,4 @@
-"""Tests for catplotlib.render.hook — see specs/002-matplotlib-integration/."""
+"""Tests for meowplotlib.render.hook — see specs/002-matplotlib-integration/."""
 
 from __future__ import annotations
 
@@ -9,7 +9,7 @@ import sys
 import matplotlib.pyplot as plt
 import pytest
 
-import catplotlib
+import meowplotlib
 from tests.render._helpers import count_cat_axes
 
 # --- User Story 1: one import, cats everywhere --------------------------------------
@@ -18,7 +18,7 @@ from tests.render._helpers import count_cat_axes
 def test_import_does_not_raise_under_agg() -> None:
     script = (
         "import matplotlib; matplotlib.use('Agg'); "
-        "import matplotlib.pyplot as plt; import catplotlib; plt.figure()"
+        "import matplotlib.pyplot as plt; import meowplotlib; plt.figure()"
     )
     result = subprocess.run([sys.executable, "-c", script], capture_output=True, text=True)
     assert result.returncode == 0, result.stderr
@@ -37,7 +37,7 @@ def test_savefig_path_decorates() -> None:
     buf = io.BytesIO()
     fig.savefig(buf, format="png")
 
-    assert getattr(fig, "_catplotlib_decorated", False) is True
+    assert getattr(fig, "_meowplotlib_decorated", False) is True
     assert count_cat_axes(fig) > 0
 
 
@@ -45,7 +45,7 @@ def test_canvas_draw_path_decorates() -> None:
     fig = _plot_reference_figure()
     fig.canvas.draw()
 
-    assert getattr(fig, "_catplotlib_decorated", False) is True
+    assert getattr(fig, "_meowplotlib_decorated", False) is True
     assert count_cat_axes(fig) > 0
 
 
@@ -76,7 +76,7 @@ def test_repeated_savefig_produces_identical_bytes() -> None:
 # --- User Story 3: session on/off switch ---------------------------------------------
 
 
-def _no_catplotlib_baseline_bytes() -> bytes:
+def _no_meowplotlib_baseline_bytes() -> bytes:
     script = (
         "import io, matplotlib\n"
         "matplotlib.use('Agg')\n"
@@ -96,25 +96,25 @@ def _no_catplotlib_baseline_bytes() -> bytes:
 
 
 def test_disable_produces_byte_identical_output_to_no_import_baseline() -> None:
-    baseline = _no_catplotlib_baseline_bytes()
+    baseline = _no_meowplotlib_baseline_bytes()
 
-    catplotlib.disable()
+    meowplotlib.disable()
     fig = _plot_reference_figure()
     buf = io.BytesIO()
     fig.savefig(buf, format="png")
 
     assert buf.getvalue() == baseline
-    assert getattr(fig, "_catplotlib_decorated", False) is False
+    assert getattr(fig, "_meowplotlib_decorated", False) is False
 
 
 def test_enable_after_disable_restores_decoration() -> None:
-    catplotlib.disable()
-    catplotlib.enable()
+    meowplotlib.disable()
+    meowplotlib.enable()
 
     fig = _plot_reference_figure()
     fig.canvas.draw()
 
-    assert getattr(fig, "_catplotlib_decorated", False) is True
+    assert getattr(fig, "_meowplotlib_decorated", False) is True
 
 
 def test_disable_does_not_strip_already_decorated_figure() -> None:
@@ -123,7 +123,7 @@ def test_disable_does_not_strip_already_decorated_figure() -> None:
     decorated_count = count_cat_axes(fig)
     assert decorated_count > 0
 
-    catplotlib.disable()
+    meowplotlib.disable()
     fig.canvas.draw()
 
     assert count_cat_axes(fig) == decorated_count
@@ -138,4 +138,4 @@ def test_seaborn_figures_decorate_if_seaborn_available() -> None:
     seaborn.lineplot(x=[1, 2, 3], y=[1, 4, 9], ax=ax)
     fig.canvas.draw()
 
-    assert getattr(fig, "_catplotlib_decorated", False) is True
+    assert getattr(fig, "_meowplotlib_decorated", False) is True

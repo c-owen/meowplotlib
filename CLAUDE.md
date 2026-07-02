@@ -1,4 +1,4 @@
-# catplotlib — root map
+# meowplotlib — root map
 
 Read `constitution.md` first (non-negotiables) and `PROGRESS.md` second (where things stand). `STANDUP_PLAN.md` is the full execution contract — milestone order, resolved decisions, acceptance criteria.
 
@@ -8,22 +8,22 @@ Read `constitution.md` first (non-negotiables) and `PROGRESS.md` second (where t
 - [PROGRESS.md](PROGRESS.md) — externalized working memory; re-read on every session start or after compaction.
 - [STANDUP_PLAN.md](STANDUP_PLAN.md) — execution contract: milestones, resolved decisions, EARS acceptance criteria.
 - [specs/](specs/) — Spec Kit output, one folder per spec-required feature (M1–M3).
-- `src/catplotlib/`
-  - [__init__.py](src/catplotlib/__init__.py) — import-time activation + public API re-exports.
-  - [api.py](src/catplotlib/api.py) — user-facing: `enable`/`disable`/`set_style`/`set_density`/`set_seed`/`config`.
+- `src/meowplotlib/`
+  - [__init__.py](src/meowplotlib/__init__.py) — import-time activation + public API re-exports.
+  - [api.py](src/meowplotlib/api.py) — user-facing: `enable`/`disable`/`set_style`/`set_density`/`set_seed`/`config`.
   - `core/` — **pure logic, no matplotlib import, no I/O** (constitution #1).
-    - [config.py](src/catplotlib/core/config.py) — the one module-level `Config` object.
-    - [placement.py](src/catplotlib/core/placement.py) — geometry: dims + exclusions → placements (M1).
-    - [rng.py](src/catplotlib/core/rng.py) — seeded RNG wrapper (M1).
+    - [config.py](src/meowplotlib/core/config.py) — the one module-level `Config` object.
+    - [placement.py](src/meowplotlib/core/placement.py) — geometry: dims + exclusions → placements (M1).
+    - [rng.py](src/meowplotlib/core/rng.py) — seeded RNG wrapper (M1).
   - `render/` — the impure layer, all matplotlib knowledge lives here.
-    - [hook.py](src/catplotlib/render/hook.py) — draw/savefig interception (M2).
-    - [artist.py](src/catplotlib/render/artist.py) — draws placed cats (M2/M3).
-    - [bboxes.py](src/catplotlib/render/bboxes.py) — exclusion bbox extraction (M2).
+    - [hook.py](src/meowplotlib/render/hook.py) — draw/savefig interception (M2).
+    - [artist.py](src/meowplotlib/render/artist.py) — draws placed cats (M2/M3).
+    - [bboxes.py](src/meowplotlib/render/bboxes.py) — exclusion bbox extraction (M2).
   - `assets/`
-    - [registry.py](src/catplotlib/assets/registry.py) — style discovery (M3).
-    - [styles.toml](src/catplotlib/assets/styles.toml) — style manifest.
+    - [registry.py](src/meowplotlib/assets/registry.py) — style discovery (M3).
+    - [styles.toml](src/meowplotlib/assets/styles.toml) — style manifest.
     - `images/<style>/*.png` — Chuck's art drop-in location (see [ATTRIBUTION.md](ATTRIBUTION.md)).
-- `tests/` — mirrors `src/catplotlib/` 1:1.
+- `tests/` — mirrors `src/meowplotlib/` 1:1.
 - [scripts/make_placeholders.py](scripts/make_placeholders.py) — generates placeholder style PNGs.
 - [scripts/gallery.py](scripts/gallery.py) — renders the visual test matrix for human review (added M2+).
 

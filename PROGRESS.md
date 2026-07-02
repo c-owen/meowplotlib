@@ -39,7 +39,7 @@ root — both already gitignored, safe to ignore/delete if found in a future ses
   `_GUARANTEED_MARGIN = 0.14`. Without this, matplotlib's default layout leaves ~2% bottom
   margin and ~6.5% left margin (tick labels sit tight against the plot) vs. ~10-12% top/right —
   cats only ever landed top/right in practice. **This is a deliberate, opted-in departure from
-  pure "decorate around the existing layout" behavior** — catplotlib now actively resizes the
+  pure "decorate around the existing layout" behavior** — meowplotlib now actively resizes the
   user's plot area a little. PRD Goal 3 updated to carve out this exception explicitly (commit
   `ca44eb1`) rather than let the PRD silently drift from shipped behavior.
 - **Denser tiers**: `core/placement.py`'s `_DENSITY_DIVISORS` halved (sparse/normal/chaotic now
@@ -93,7 +93,7 @@ root — both already gitignored, safe to ignore/delete if found in a future ses
   artist.py` draws each cat at its true size within that reserved axes and applies an
   `Affine2D` rotation transform in data-space. Any future placement/rendering geometry change
   must keep the rendered footprint inside what `bbox()` reserves.
-- Each cat is its own tiny inset `Axes` (tagged `_catplotlib_cat = True`, excluded from future
+- Each cat is its own tiny inset `Axes` (tagged `_meowplotlib_cat = True`, excluded from future
   exclusion extraction) — not `AnnotationBbox`/`OffsetImage`, whose point-space `zoom` caused
   real sub-pixel overlaps the chart-matrix test caught but simpler tests didn't.
 - `Figure.draw` is patched exactly once, permanently, at import time. `enable()`/`disable()`

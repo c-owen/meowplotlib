@@ -1,7 +1,7 @@
 # Data Model: Core Placement Engine
 
 All types are plain `dataclasses` (frozen where the value is never mutated after creation) in
-`src/catplotlib/core/placement.py`. No matplotlib types appear anywhere in this module
+`src/meowplotlib/core/placement.py`. No matplotlib types appear anywhere in this module
 (constitution #1).
 
 ## `Rect`

@@ -7,7 +7,7 @@ matplotlib objects. The state introduced is:
 
 | Attribute | Owner | Type | Notes |
 |---|---|---|---|
-| `Figure._catplotlib_decorated` | `matplotlib.figure.Figure` instance (set by `render/hook.py`) | `bool` | Absent (falsy via `getattr(..., False)`) until first decoration; set `True` after. Never reset — decoration is a one-time, per-instance event (FR-003). |
+| `Figure._meowplotlib_decorated` | `matplotlib.figure.Figure` instance (set by `render/hook.py`) | `bool` | Absent (falsy via `getattr(..., False)`) until first decoration; set `True` after. Never reset — decoration is a one-time, per-instance event (FR-003). |
 
 ## Process-level state
 
@@ -21,10 +21,10 @@ matplotlib objects. The state introduced is:
 ### `render/hook.py`
 
 - `install() -> None` — replaces `matplotlib.figure.Figure.draw` with a wrapper, guarded by the
-  module-level `_installed` flag (FR-009). Called once from `catplotlib/__init__.py` at import
+  module-level `_installed` flag (FR-009). Called once from `meowplotlib/__init__.py` at import
   time.
 - The wrapper itself (internal, not exported): on each call, checks `Config.enabled` and the
-  instance's `_catplotlib_decorated` flag; if both indicate decoration should happen, calls
+  instance's `_meowplotlib_decorated` flag; if both indicate decoration should happen, calls
   `bboxes.extract_exclusions(figure)` → `placement.place_cats(...)` →
   `artist.draw_placements(figure, placements)`, then sets the flag; always calls the original
   `draw()` afterward.
@@ -39,7 +39,7 @@ matplotlib objects. The state introduced is:
 
 - `draw_placements(figure: Figure, placements: list[Placement]) -> None` — for each `Placement`,
   resolves an image (M2: internal stub per research.md; M3: real registry lookup) and adds it as
-  its own tiny inset `Axes` (`figure.add_axes(...)`, tagged `_catplotlib_cat = True`) positioned
+  its own tiny inset `Axes` (`figure.add_axes(...)`, tagged `_meowplotlib_cat = True`) positioned
   at the placement's exact figure-fraction bbox — **not** `AnnotationBbox`/`OffsetImage`, whose
   point-space `zoom` parameter caused real (if sub-pixel) overlaps with protected content; see
   `specs/002-matplotlib-integration`'s implementation commit history and
@@ -49,11 +49,11 @@ matplotlib objects. The state introduced is:
 ## State transitions
 
 ```text
-Figure created (plt.figure()) → no _catplotlib_decorated attribute
+Figure created (plt.figure()) → no _meowplotlib_decorated attribute
   → first Figure.draw() call (display or savefig) with Config.enabled=True
-    → exclusions extracted, cats placed, artists added, _catplotlib_decorated=True
+    → exclusions extracted, cats placed, artists added, _meowplotlib_decorated=True
   → any subsequent Figure.draw() call
-    → _catplotlib_decorated is True → skip decoration → call original draw() only
+    → _meowplotlib_decorated is True → skip decoration → call original draw() only
 ```
 
 ```text

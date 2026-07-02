@@ -1,4 +1,4 @@
-# Contract: `catplotlib.core.placement.place_cats`
+# Contract: `meowplotlib.core.placement.place_cats`
 
 This is the public interface the render layer (M2) calls. It is the only entry point M2 needs
 from this module besides the `Rect`, `PlacementConfig`, and `Placement` types themselves.

@@ -20,7 +20,7 @@ import io
 import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
-import catplotlib
+import meowplotlib
 
 fig, ax = plt.subplots()
 ax.plot([1, 2, 3], [1, 4, 9])
@@ -29,7 +29,7 @@ ax.set_ylabel("y")
 
 buf = io.BytesIO()
 fig.savefig(buf, format="png")
-assert getattr(fig, "_catplotlib_decorated", False) is True
+assert getattr(fig, "_meowplotlib_decorated", False) is True
 
 # Idempotency: redraw several times, artist count must not change.
 before = len(fig.artists)
@@ -38,17 +38,17 @@ for _ in range(5):
 after = len(fig.artists)
 assert before == after
 
-# Disable: a fresh figure must byte-match a no-catplotlib baseline.
-catplotlib.disable()
+# Disable: a fresh figure must byte-match a no-meowplotlib baseline.
+meowplotlib.disable()
 fig2, ax2 = plt.subplots()
 ax2.plot([1, 2, 3], [1, 4, 9])
 ax2.set_xlabel("x")
 ax2.set_ylabel("y")
 buf2 = io.BytesIO()
 fig2.savefig(buf2, format="png")
-assert getattr(fig2, "_catplotlib_decorated", False) is False
+assert getattr(fig2, "_meowplotlib_decorated", False) is False
 
-catplotlib.enable()
+meowplotlib.enable()
 ```
 
 ## Expected outcome

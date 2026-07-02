@@ -1,4 +1,4 @@
-"""Tests for catplotlib.assets.registry — see specs/003-style-system/."""
+"""Tests for meowplotlib.assets.registry — see specs/003-style-system/."""
 
 from __future__ import annotations
 
@@ -6,7 +6,7 @@ from pathlib import Path
 
 import pytest
 
-from catplotlib.assets.registry import available_styles, discover_styles, resolve_style_names
+from meowplotlib.assets.registry import available_styles, discover_styles, resolve_style_names
 
 # --- Foundational: discover_styles() against fixtures --------------------------------
 

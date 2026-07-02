@@ -14,7 +14,7 @@ on one shared hook, so later stories extend rather than duplicate earlier work.
 
 ## Path Conventions
 
-Single project. `src/catplotlib/render/`, `tests/render/` — stubbed in M0, filled in here.
+Single project. `src/meowplotlib/render/`, `tests/render/` — stubbed in M0, filled in here.
 
 ---
 
@@ -32,8 +32,8 @@ Single project. `src/catplotlib/render/`, `tests/render/` — stubbed in M0, fil
 **⚠️ CRITICAL**: No user story can be verified until this phase is complete — the hook wrapper
 needs both to do anything observable.
 
-- [x] T003 [P] Implement `extract_exclusions(figure) -> list[Rect]` in `src/catplotlib/render/bboxes.py`: for each `Axes` in `figure.axes`, compute `get_tightbbox()` (+ legend extent if `ax.get_legend()` is not `None`), convert to figure-fraction `Rect` via `figure.transFigure.inverted()`, per research.md/data-model.md. Obtain the renderer via `figure._get_renderer()`.
-- [x] T004 [P] Implement a minimal internal style stub (single placeholder shape resolver) plus `draw_placements(figure, placements) -> None` in `src/catplotlib/render/artist.py`, adding one artist per `Placement` via `figure.add_artist(...)`, positioned/sized/rotated per data-model.md. Per research.md's Assumption, this does not depend on M3.
+- [x] T003 [P] Implement `extract_exclusions(figure) -> list[Rect]` in `src/meowplotlib/render/bboxes.py`: for each `Axes` in `figure.axes`, compute `get_tightbbox()` (+ legend extent if `ax.get_legend()` is not `None`), convert to figure-fraction `Rect` via `figure.transFigure.inverted()`, per research.md/data-model.md. Obtain the renderer via `figure._get_renderer()`.
+- [x] T004 [P] Implement a minimal internal style stub (single placeholder shape resolver) plus `draw_placements(figure, placements) -> None` in `src/meowplotlib/render/artist.py`, adding one artist per `Placement` via `figure.add_artist(...)`, positioned/sized/rotated per data-model.md. Per research.md's Assumption, this does not depend on M3.
 - [x] T005 [P] `tests/render/test_bboxes.py`: example tests asserting `extract_exclusions()` returns bboxes that actually cover a known axes' plotted line, its axis labels, and (when present) its legend, for a simple reference figure.
 
 **Checkpoint**: `bboxes.extract_exclusions()` and `artist.draw_placements()` are independently callable and tested against a live (but not-yet-hooked) figure.
@@ -42,24 +42,24 @@ needs both to do anything observable.
 
 ## Phase 3: User Story 1 - One import, cats everywhere (Priority: P1) 🎯 MVP
 
-**Goal**: `import catplotlib` causes the next displayed or saved figure to contain cat artwork.
+**Goal**: `import meowplotlib` causes the next displayed or saved figure to contain cat artwork.
 
-**Independent Test**: Fresh process, `import matplotlib.pyplot as plt; import catplotlib`,
-create+savefig a simple line plot, assert `_catplotlib_decorated` is `True` and the figure has
+**Independent Test**: Fresh process, `import matplotlib.pyplot as plt; import meowplotlib`,
+create+savefig a simple line plot, assert `_meowplotlib_decorated` is `True` and the figure has
 extra artists beyond the plotted line.
 
 ### Tests for User Story 1
 
-- [x] T006 [P] [US1] `tests/render/test_hook.py`: `import catplotlib` under `Agg` does not raise (FR-008/SC-005).
-- [x] T007 [US1] `tests/render/test_hook.py`: create a figure, plot a line, `savefig` to a `BytesIO` buffer; assert `figure._catplotlib_decorated is True` and `len(figure.artists) > 0` after.
+- [x] T006 [P] [US1] `tests/render/test_hook.py`: `import meowplotlib` under `Agg` does not raise (FR-008/SC-005).
+- [x] T007 [US1] `tests/render/test_hook.py`: create a figure, plot a line, `savefig` to a `BytesIO` buffer; assert `figure._meowplotlib_decorated is True` and `len(figure.artists) > 0` after.
 - [x] T008 [US1] `tests/render/test_hook.py`: same as T007 but trigger via `figure.canvas.draw()` directly (the non-savefig display path) instead of `savefig`, confirming FR-002's shared interception point.
 
 ### Implementation for User Story 1
 
-- [x] T009 [US1] Implement `install()` in `src/catplotlib/render/hook.py`: wraps `matplotlib.figure.Figure.draw` with a function that (per data-model.md's state machine) checks `Config.enabled` and `self._catplotlib_decorated`, and on the decorate branch calls `bboxes.extract_exclusions` → `core.placement.place_cats` → `artist.draw_placements`, sets the flag, then always calls the original `draw()` (depends on T003, T004).
-- [x] T010 [US1] Wire `render.hook.install()` into `src/catplotlib/__init__.py` so it runs at import time (depends on T009).
+- [x] T009 [US1] Implement `install()` in `src/meowplotlib/render/hook.py`: wraps `matplotlib.figure.Figure.draw` with a function that (per data-model.md's state machine) checks `Config.enabled` and `self._meowplotlib_decorated`, and on the decorate branch calls `bboxes.extract_exclusions` → `core.placement.place_cats` → `artist.draw_placements`, sets the flag, then always calls the original `draw()` (depends on T003, T004).
+- [x] T010 [US1] Wire `render.hook.install()` into `src/meowplotlib/__init__.py` so it runs at import time (depends on T009).
 
-**Checkpoint**: User Story 1 fully functional — `import catplotlib` alone produces decorated output for both display and savefig paths.
+**Checkpoint**: User Story 1 fully functional — `import meowplotlib` alone produces decorated output for both display and savefig paths.
 
 ---
 
@@ -89,20 +89,20 @@ constant artist count and identical placement data throughout.
 **Goal**: `disable()` makes all subsequently rendered *new* figures byte-identical to
 matplotlib-alone output; `enable()` restores decoration afterward.
 
-**Independent Test**: Render+save with catplotlib active; `disable()`; render+save an equivalent
-fresh figure; assert its bytes equal a no-catplotlib-imported baseline. `enable()`; render+save
+**Independent Test**: Render+save with meowplotlib active; `disable()`; render+save an equivalent
+fresh figure; assert its bytes equal a no-meowplotlib-imported baseline. `enable()`; render+save
 again; assert cats are back.
 
 ### Tests for User Story 3
 
-- [x] T014 [P] [US3] `tests/render/test_hook.py`: generate a true baseline by rendering a reference figure in a subprocess that never imports catplotlib (`subprocess.run([sys.executable, "-c", ...])`) and capturing its saved bytes.
-- [x] T015 [US3] `tests/render/test_hook.py`: in-process, call `catplotlib.disable()`, render+save an equivalent fresh figure, assert its bytes equal the T014 baseline (SC-003, constitution #4).
-- [x] T016 [P] [US3] `tests/render/test_hook.py`: `catplotlib.disable()` then `catplotlib.enable()`; render+save a fresh figure; assert `_catplotlib_decorated is True` again (FR-005).
-- [x] T017 [P] [US3] `tests/render/test_hook.py`: decorate a figure, then call `catplotlib.disable()`; assert the already-decorated figure's existing artists are untouched (spec User Story 3, Acceptance Scenario 3).
+- [x] T014 [P] [US3] `tests/render/test_hook.py`: generate a true baseline by rendering a reference figure in a subprocess that never imports meowplotlib (`subprocess.run([sys.executable, "-c", ...])`) and capturing its saved bytes.
+- [x] T015 [US3] `tests/render/test_hook.py`: in-process, call `meowplotlib.disable()`, render+save an equivalent fresh figure, assert its bytes equal the T014 baseline (SC-003, constitution #4).
+- [x] T016 [P] [US3] `tests/render/test_hook.py`: `meowplotlib.disable()` then `meowplotlib.enable()`; render+save a fresh figure; assert `_meowplotlib_decorated is True` again (FR-005).
+- [x] T017 [P] [US3] `tests/render/test_hook.py`: decorate a figure, then call `meowplotlib.disable()`; assert the already-decorated figure's existing artists are untouched (spec User Story 3, Acceptance Scenario 3).
 
 ### Implementation for User Story 3
 
-- [x] T018 [US3] Confirm the T009 wrapper's `Config.enabled` check is the very first thing evaluated and that the `False` branch calls only the original `draw()` with no other catplotlib code path executed (per research.md's byte-identity rationale) — fix if any extraction/logging/etc. runs before the check (depends on T009).
+- [x] T018 [US3] Confirm the T009 wrapper's `Config.enabled` check is the very first thing evaluated and that the `False` branch calls only the original `draw()` with no other meowplotlib code path executed (per research.md's byte-identity rationale) — fix if any extraction/logging/etc. runs before the check (depends on T009).
 
 **Checkpoint**: User Stories 1-3 all pass independently.
 
@@ -131,8 +131,8 @@ bboxes, assert empty intersection (the STANDUP_PLAN.md §8 harness).
 
 ## Phase 7: Polish & Cross-Cutting Concerns
 
-- [x] T022 [P] Add a seaborn smoke test: `import seaborn; import catplotlib` (order matters not — both should compose), plot a seaborn chart, assert decoration + non-overlap hold, in `tests/render/test_hook.py` (spec edge case: "seaborn compatibility"). Skip gracefully if `seaborn` is not installed (it's not a project dependency).
-- [x] T023 [P] Add a "figure created before import" test: construct a `Figure()` via a saved reference *before* `catplotlib.render.hook.install()` is called in a fresh subprocess sequence, then `import catplotlib`, then draw it — assert it still decorates (spec edge case).
+- [x] T022 [P] Add a seaborn smoke test: `import seaborn; import meowplotlib` (order matters not — both should compose), plot a seaborn chart, assert decoration + non-overlap hold, in `tests/render/test_hook.py` (spec edge case: "seaborn compatibility"). Skip gracefully if `seaborn` is not installed (it's not a project dependency).
+- [x] T023 [P] Add a "figure created before import" test: construct a `Figure()` via a saved reference *before* `meowplotlib.render.hook.install()` is called in a fresh subprocess sequence, then `import meowplotlib`, then draw it — assert it still decorates (spec edge case).
 - [x] T024 Run `quickstart.md`'s manual smoke script end-to-end and confirm all assertions pass.
 - [x] T025 Run `make check` (ruff, ruff format --check, mypy --strict, pytest) and confirm all green, including the full `tests/render/` matrix.
 - [ ] T026 Update `PROGRESS.md`: mark M2 complete, note next milestone is M3 (or M2.5 — the M3 stub in `artist.py` becoming the real registry).

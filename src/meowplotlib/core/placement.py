@@ -9,7 +9,7 @@ import math
 from dataclasses import dataclass
 from typing import Literal
 
-from catplotlib.core.rng import new_rng
+from meowplotlib.core.rng import new_rng
 
 Density = Literal["sparse", "normal", "chaotic"]
 

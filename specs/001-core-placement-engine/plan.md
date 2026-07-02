@@ -73,7 +73,7 @@ specs/001-core-placement-engine/
 ### Source Code (repository root)
 
 ```text
-src/catplotlib/core/
+src/meowplotlib/core/
 ├── placement.py    # Rect, PlacementConfig, Placement dataclasses + place_cats()
 └── rng.py          # thin seeded-RNG helper used by placement.py
 
@@ -82,7 +82,7 @@ tests/core/
 ```
 
 **Structure Decision**: Single-project library layout already established in M0
-(`src/catplotlib/core/`, `tests/core/`). No new top-level directories needed — this feature
+(`src/meowplotlib/core/`, `tests/core/`). No new top-level directories needed — this feature
 fills in two files that were stubbed out in M0's scaffold.
 
 ## Complexity Tracking

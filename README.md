@@ -1,12 +1,12 @@
-# catplotlib
+# meowplotlib
 
-![Before and after adding catplotlib to a matplotlib chart](docs/before_after.png)
+![Before and after adding meowplotlib to a matplotlib chart](docs/before_after.png)
 
 Whimsical cat decorations for `matplotlib` figures. One import, zero required config.
 
 ```python
 import matplotlib.pyplot as plt
-import catplotlib  # cats now appear on every figure you show or save
+import meowplotlib  # cats now appear on every figure you show or save
 
 plt.plot([1, 2, 3], [1, 4, 9])
 plt.savefig("chart.png")
@@ -15,19 +15,19 @@ plt.savefig("chart.png")
 ## Quickstart
 
 ```bash
-pip install catplotlib
+pip install meowplotlib
 ```
 
 ```python
-import catplotlib
+import meowplotlib
 
-catplotlib.set_style("chonk")      # or a list, or "mix"
-catplotlib.set_density("chaotic")  # "sparse" | "normal" | "chaotic"
-catplotlib.set_seed(42)            # reproducible layouts
-catplotlib.disable()               # turn it off for the rest of the session
-catplotlib.enable()                # turn it back on
+meowplotlib.set_style("chonk")      # or a list, or "mix"
+meowplotlib.set_density("chaotic")  # "sparse" | "normal" | "chaotic"
+meowplotlib.set_seed(42)            # reproducible layouts
+meowplotlib.disable()               # turn it off for the rest of the session
+meowplotlib.enable()                # turn it back on
 
-with catplotlib.config(enabled=False):
+with meowplotlib.config(enabled=False):
     ...  # one chart rendered without cats
 ```
 
@@ -44,7 +44,7 @@ with catplotlib.config(enabled=False):
 ## Art
 
 v1 ships with three real cat art styles: `classic`, `derp`, and `chonk`. Adding or swapping a
-style is a pure file-drop under `src/catplotlib/assets/images/<style>/` plus one `styles.toml`
+style is a pure file-drop under `src/meowplotlib/assets/images/<style>/` plus one `styles.toml`
 entry — no code changes required. See [ATTRIBUTION.md](ATTRIBUTION.md) for notes.
 
 See `STANDUP_PLAN.md` and `constitution.md` for the full project contract.

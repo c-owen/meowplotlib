@@ -7,8 +7,8 @@ from collections.abc import Callable
 import matplotlib.pyplot as plt
 import pytest
 
-from catplotlib.core.config import get_config
-from catplotlib.render.bboxes import extract_exclusions
+from meowplotlib.core.config import get_config
+from meowplotlib.render.bboxes import extract_exclusions
 
 FIGSIZES = {
     "small": (2.0, 2.0),
@@ -67,7 +67,7 @@ def test_no_cat_overlaps_protected_elements(
     fig.canvas.draw()
     exclusions = extract_exclusions(fig)
 
-    cat_axes = [ax for ax in fig.axes if getattr(ax, "_catplotlib_cat", False)]
+    cat_axes = [ax for ax in fig.axes if getattr(ax, "_meowplotlib_cat", False)]
     for cat_ax in cat_axes:
         cat_bbox = cat_ax.get_position()  # figure-fraction, exactly what artist.py requested
         for exclusion in exclusions:

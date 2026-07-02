@@ -12,7 +12,7 @@ from matplotlib.axes import Axes
 from matplotlib.figure import Figure
 from matplotlib.patches import Circle, Ellipse, Polygon
 
-ASSETS_DIR = Path(__file__).resolve().parent.parent / "src" / "catplotlib" / "assets" / "images"
+ASSETS_DIR = Path(__file__).resolve().parent.parent / "src" / "meowplotlib" / "assets" / "images"
 
 
 def _new_canvas() -> tuple[Figure, Axes]:

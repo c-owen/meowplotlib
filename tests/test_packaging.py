@@ -23,14 +23,14 @@ import io
 import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
-import catplotlib
+import meowplotlib
 
 fig, ax = plt.subplots()
 ax.plot([1, 2, 3], [1, 4, 9])
 buf = io.BytesIO()
 fig.savefig(buf, format="png")
-assert getattr(fig, "_catplotlib_decorated", False) is True
-cat_count = sum(1 for a in fig.axes if getattr(a, "_catplotlib_cat", False))
+assert getattr(fig, "_meowplotlib_decorated", False) is True
+cat_count = sum(1 for a in fig.axes if getattr(a, "_meowplotlib_cat", False))
 assert cat_count > 0
 print("SMOKE_TEST_OK", cat_count)
 """

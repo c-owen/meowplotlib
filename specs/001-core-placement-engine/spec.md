@@ -6,7 +6,7 @@
 
 **Status**: Draft
 
-**Input**: User description: "Core placement engine for catplotlib (src/catplotlib/core/placement.py and core/rng.py). Pure logic layer, no matplotlib imports, no I/O (constitution rule #1). Given canvas dimensions, a list of exclusion rectangles, and config (density tier, size range, seed, allowed styles), return a list of cat placements (x, y, size, rotation, style id) confined to the border/margin region of the canvas, never overlapping any exclusion rectangle."
+**Input**: User description: "Core placement engine for meowplotlib (src/meowplotlib/core/placement.py and core/rng.py). Pure logic layer, no matplotlib imports, no I/O (constitution rule #1). Given canvas dimensions, a list of exclusion rectangles, and config (density tier, size range, seed, allowed styles), return a list of cat placements (x, y, size, rotation, style id) confined to the border/margin region of the canvas, never overlapping any exclusion rectangle."
 
 ## Clarifications
 
@@ -19,8 +19,8 @@
 ## User Scenarios & Testing *(mandatory)*
 
 <!--
-  The "user" of this internal engine is the render layer (src/catplotlib/render/hook.py, M2)
-  and, transitively, the person viewing a catplotlib-decorated figure. Each story below is
+  The "user" of this internal engine is the render layer (src/meowplotlib/render/hook.py, M2)
+  and, transitively, the person viewing a meowplotlib-decorated figure. Each story below is
   independently testable via the engine's pure function API without any matplotlib rendering.
 -->
 

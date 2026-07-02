@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from catplotlib.core.placement import Rect
+from meowplotlib.core.placement import Rect
 
 if TYPE_CHECKING:
     from matplotlib.figure import Figure
@@ -21,7 +21,7 @@ def extract_exclusions(figure: Figure) -> list[Rect]:
     inv = figure.transFigure.inverted()
 
     for axes in figure.axes:
-        if getattr(axes, "_catplotlib_cat", False):
+        if getattr(axes, "_meowplotlib_cat", False):
             continue  # a previously-placed cat's own inset axes, not a protected element
         bbox = axes.get_tightbbox(renderer)
         if bbox is None:
@@ -49,7 +49,7 @@ def ensure_minimum_margin(figure: Figure, margin: float) -> None:
     inv = figure.transFigure.inverted()
 
     for axes in figure.axes:
-        if getattr(axes, "_catplotlib_cat", False):
+        if getattr(axes, "_meowplotlib_cat", False):
             continue
         tight = axes.get_tightbbox(renderer)
         if tight is None:

@@ -23,12 +23,12 @@ for no benefit since `Figure.draw` already covers both).
 
 ## Decision: Per-instance idempotency flag, set inside the wrapper
 
-Inside the wrapped `draw()`: if `getattr(self, "_catplotlib_decorated", False)` is falsy, extract
+Inside the wrapped `draw()`: if `getattr(self, "_meowplotlib_decorated", False)` is falsy, extract
 exclusions, call M1's `place_cats()`, add the resulting artists via `self.add_artist(...)`, then
-set `self._catplotlib_decorated = True`. Always call the original `draw()` afterward (decoration
+set `self._meowplotlib_decorated = True`. Always call the original `draw()` afterward (decoration
 adds artists; the original draw still needs to render everything, cats included).
 
-**Rationale**: A new `Figure()` instance has no `_catplotlib_decorated` attribute, so the flag
+**Rationale**: A new `Figure()` instance has no `_meowplotlib_decorated` attribute, so the flag
 naturally starts falsy — no explicit reset logic needed for new figures (confirmed in research:
 each `plt.figure()` call constructs a fresh `Figure` object). The flag lives on the instance, not
 a global registry, so there's no memory-leak/cleanup concern for figures that get garbage
@@ -42,8 +42,8 @@ idiomatic matplotlib extension pattern — e.g. matplotlib itself stores plenty 
 ## Decision: Permanent single patch + `Config.enabled` flag-check (per clarify)
 
 `Figure.draw` is replaced exactly once at import time, for the lifetime of the process. The
-wrapper's first action on every call is to check `catplotlib.core.config.get_config().enabled`;
-if `False`, it calls the original draw immediately and returns, executing no other catplotlib
+wrapper's first action on every call is to check `meowplotlib.core.config.get_config().enabled`;
+if `False`, it calls the original draw immediately and returns, executing no other meowplotlib
 code. `enable()`/`disable()` (already stubbed in `api.py` from M0) simply mutate that flag — no
 re-patching.
 

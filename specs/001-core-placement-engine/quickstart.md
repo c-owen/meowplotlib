@@ -19,7 +19,7 @@ Expect all tests green, including the `hypothesis` property-based suite covering
 ## Manual smoke check
 
 ```python
-from catplotlib.core.placement import PlacementConfig, Rect, place_cats
+from meowplotlib.core.placement import PlacementConfig, Rect, place_cats
 
 canvas_w, canvas_h = 1.0, 1.0
 exclusions = [Rect(x=0.15, y=0.15, width=0.7, height=0.7)]  # a typical centered axes area

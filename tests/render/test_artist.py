@@ -8,8 +8,8 @@ import matplotlib.image as mpimg
 import matplotlib.pyplot as plt
 import numpy as np
 
-import catplotlib
-from catplotlib.assets.registry import available_styles
+import meowplotlib
+from meowplotlib.assets.registry import available_styles
 
 
 def _reference_figure() -> plt.Figure:
@@ -30,7 +30,7 @@ def _cat_style_names(fig: plt.Figure) -> list[str]:
     pools = _style_image_arrays()
     resolved = []
     for ax in fig.axes:
-        if not getattr(ax, "_catplotlib_cat", False):
+        if not getattr(ax, "_meowplotlib_cat", False):
             continue
         rendered = np.asarray(ax.images[0].get_array())
         for name, images in pools.items():
@@ -44,9 +44,9 @@ def _cat_style_names(fig: plt.Figure) -> list[str]:
 
 
 def test_single_style_all_cats_from_that_pool() -> None:
-    catplotlib.set_style("chonk")
-    catplotlib.set_density("chaotic")
-    catplotlib.set_seed(1)
+    meowplotlib.set_style("chonk")
+    meowplotlib.set_density("chaotic")
+    meowplotlib.set_seed(1)
     fig = _reference_figure()
     fig.canvas.draw()
 
@@ -59,12 +59,12 @@ def test_single_style_all_cats_from_that_pool() -> None:
 
 
 def test_mix_produces_more_than_one_style_across_seeds() -> None:
-    catplotlib.set_style("mix")
-    catplotlib.set_density("chaotic")
+    meowplotlib.set_style("mix")
+    meowplotlib.set_density("chaotic")
 
     saw_multiple = False
     for seed in range(20):
-        catplotlib.set_seed(seed)
+        meowplotlib.set_seed(seed)
         fig = _reference_figure()
         fig.canvas.draw()
         if len(set(_cat_style_names(fig))) > 1:
@@ -78,9 +78,9 @@ def test_mix_produces_more_than_one_style_across_seeds() -> None:
 
 
 def test_reproducibility_survives_style_resolution() -> None:
-    catplotlib.set_style("chonk")
-    catplotlib.set_seed(1)
-    catplotlib.set_density("chaotic")
+    meowplotlib.set_style("chonk")
+    meowplotlib.set_seed(1)
+    meowplotlib.set_density("chaotic")
 
     fig1 = _reference_figure()
     buf1 = io.BytesIO()
